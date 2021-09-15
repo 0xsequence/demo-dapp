@@ -15,6 +15,8 @@ const HomeRoute = () => {
 
   const network = 'matic'
   const wallet = new sequence.Wallet(network, { walletAppURL: 'https://sequence.app' })
+  // const network = 'mumbai'
+  // const wallet = new sequence.Wallet(network, { walletAppURL: 'https://sequence.app/' })
 
   wallet.on('message', (message) => {
     console.log('wallet event (message):', message)
