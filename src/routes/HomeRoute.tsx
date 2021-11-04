@@ -13,10 +13,15 @@ configureLogger({ logLevel: 'DEBUG' })
 
 const HomeRoute = () => {
 
-  const network = 'matic'
-  const wallet = new sequence.Wallet(network, { walletAppURL: 'https://sequence.app' })
+  const network = 'polygon'
+  const wallet = new sequence.Wallet(network)
+
+  // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet"
   // const network = 'mumbai'
-  // const wallet = new sequence.Wallet(network, { walletAppURL: 'https://sequence.app/' })
+  // const wallet = new sequence.Wallet(network)
+
+  // Example of changing the walletAppURL
+  // const wallet = new sequence.Wallet(network, { walletAppURL: 'https://sequence.app' })
 
   wallet.on('message', (message) => {
     console.log('wallet event (message):', message)
@@ -458,6 +463,8 @@ And that has made all the difference.`
       my: '50px'
     }}>
       <h1 style={{ color: 'white', marginBottom: '10px' }}>Demo Dapp ({network && network.length > 0 ? network : 'mainnet' })</h1>
+
+      <p style={{ color: 'white', marginBottom: '14px', fontSize: '14px', fontStyle: 'italic' }}>Please open your browser dev inspector to view output of functions below</p>
 
       <p>
         <Button px={3} m={1} onClick={() => connect()}>Connect</Button>
