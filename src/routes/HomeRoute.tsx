@@ -16,7 +16,8 @@ const HomeRoute = () => {
   const network = 'polygon'
   const wallet = new sequence.Wallet(network)
 
-  // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet"
+  // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
+  // As well, make sure to comment out any other `const wallet = ..` statements.
   // const network = 'mumbai'
   // const wallet = new sequence.Wallet(network)
 
