@@ -424,7 +424,7 @@ And that has made all the difference.`
 
     const amount = ethers.utils.parseUnits('5', 18)
     
-    const daiContractAddress = '0x03aced39ec2a4f4018421578778556f8bf32196a' // (local env) DAI address
+    const daiContractAddress = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063' // (DAI address on Polygon)
 
     const tx: sequence.transactions.Transaction = {
       delegateCall: false,

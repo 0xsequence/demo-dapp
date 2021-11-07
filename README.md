@@ -18,6 +18,27 @@ Think of these functions as a "cookbook" for how you can perform these functions
 
 Also note, sequence.js is built on top of ethers.js, and is API-compatible.
 
+## Screenshots
+
+**Opening wallet from dapp:**
+
+![Open Sequence Wallet From Dapp](./screenshots/screen-open.png)
+
+
+**Send transaction from dapp:**
+
+Sequence Wallet is an Ethereum wallet supporting Ethereum mainnet, Polygon and more. Sequence will work
+with any blockchain which is EVM compatible and supports Ethereum's node JSON-RPC interface.
+
+Here you can see in this screenshot the call to "Send DAI" from demo-dapp
+(https://github.com/0xsequence/demo-dapp/blob/master/src/routes/HomeRoute.tsx#L420). This function demonstrates
+how you can transfer an ERC-20 token like DAI on any Ethereum network.
+
+Notice how you can pay gas fees for a transaction in either MATIC token or USDC for price of $0.01.
+
+![Transfer ERC-20 token on Polygon](./screenshots/screen-txn.png)
+
+
 
 ## LICENSE
 
