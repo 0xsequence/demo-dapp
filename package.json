@@ -20,11 +20,11 @@
     "unlink-sequence": "yarn unlink 0xsequence @0xsequence/abi @0xsequence/api @0xsequence/auth @0xsequence/chaind @0xsequence/config @0xsequence/guard @0xsequence/multicall @0xsequence/network @0xsequence/provider @0xsequence/relayer @0xsequence/transactions @0xsequence/utils @0xsequence/wallet"
   },
   "dependencies": {
-    "0xsequence": "0.29.6",
-    "@0xsequence/ethauth": "0.4.3",
+    "0xsequence": "0.31.0",
+    "@0xsequence/ethauth": "0.5.0",
     "core-js": "^3.6.1",
     "emotion": "^10.0.27",
-    "ethers": "^5.0.32",
+    "ethers": "^5.5.1",
     "global": "^4.3.2",
     "history": "^4.10.1",
     "micro-observables": "^1.3.3",
