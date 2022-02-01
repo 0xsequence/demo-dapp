@@ -3,15 +3,9 @@ import React from 'react'
 import { useContext, useState, useEffect, useMemo } from 'react'
 import { Observable, Unsubscriber } from 'micro-observables'
 
-import { AppStore } from './AppStore'
-import { WalletStore } from './WalletStore'
 import { RouterStore } from './RouterStore'
 
-export { AppStore, WalletStore }
-
 export class Store {
-  app = new AppStore(this)
-  wallet = new WalletStore(this)
   router = new RouterStore(this)
 }
 

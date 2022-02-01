@@ -18,6 +18,7 @@ const global = theme => css`
   body {
     text-size-adjust: none;
     touch-action: manipulation;
+    font-family: Barlow;
   }
 
   html,
