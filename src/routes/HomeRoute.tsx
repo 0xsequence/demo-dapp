@@ -68,7 +68,7 @@ const HomeRoute = () => {
 
       console.warn({decodedProof})
 
-      const isValid = await wallet.commands.isValidTypedDataSignature(
+      const isValid = await wallet.utils.isValidTypedDataSignature(
         await wallet.getAddress(),
         connectDetails.proof.typedData,
         decodedProof.signature,
@@ -77,8 +77,6 @@ const HomeRoute = () => {
       console.log('isValid?', isValid)
       if (!isValid) throw new Error('sig invalid')
     }
-
-    // wallet.closeWallet()
   }
 
   const disconnect = () => {
@@ -138,7 +136,6 @@ const HomeRoute = () => {
   }
 
   const getWalletState = async () => {
-    // TODO: review ..
     console.log('wallet state:', await wallet.getSigner().getWalletState())
   }
 
@@ -181,7 +178,7 @@ And that has made all the difference.`
     console.log('signature:', sig)
 
     // validate
-    const isValid = await wallet.commands.isValidMessageSignature(
+    const isValid = await wallet.utils.isValidMessageSignature(
       await wallet.getAddress(),
       message,
       sig,
@@ -191,17 +188,17 @@ And that has made all the difference.`
     if (!isValid) throw new Error('sig invalid')
 
     // recover
-    const walletConfig = await wallet.commands.recoverWalletConfigFromMessage(
-      await wallet.getAddress(),
-      message,
-      sig,
-      await signer.getChainId(),
-      sequenceContext
-    )
-    console.log('recovered walletConfig:', walletConfig)
-    const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
-    if (!match) throw new Error('recovery address does not match')
-    console.log('address match?', match)
+    // const walletConfig = await wallet.utils.recoverWalletConfigFromMessage(
+    //   await wallet.getAddress(),
+    //   message,
+    //   sig,
+    //   await signer.getChainId(),
+    //   sequenceContext
+    // )
+    // console.log('recovered walletConfig:', walletConfig)
+    // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
+    // if (!match) throw new Error('recovery address does not match')
+    // console.log('address match?', match)
   }
 
   const signAuthMessage = async () => {
@@ -221,7 +218,7 @@ And that has made all the difference.`
     }
 
     // validate
-    const isValid = await wallet.commands.isValidMessageSignature(
+    const isValid = await wallet.utils.isValidMessageSignature(
       await wallet.getAddress(),
       message,
       sig,
@@ -231,7 +228,7 @@ And that has made all the difference.`
     if (!isValid) throw new Error('sig invalid')
 
     console.log('is wallet deployed on mainnet?', await wallet.isDeployed('mainnet'))
-    console.log('is wallet deployed on matic?', await wallet.isDeployed('matic'))
+    console.log('is wallet deployed on matic?', await wallet.isDeployed('polygon'))
 
     // recover
     //
@@ -241,16 +238,16 @@ And that has made all the difference.`
     // TODO/NOTE: in order to recover this, the wallet needs to be updated on-chain,
     // or we need the init config.. check if its deployed and updated?
     // NOTE: this should work though, lets confirm it is deployed, and that the config is updated..
-    const walletConfig = await wallet.commands.recoverWalletConfigFromMessage(
-      await wallet.getAddress(),
-      message,
-      sig,
-      await signer.getChainId()
-    )
+    // const walletConfig = await wallet.utils.recoverWalletConfigFromMessage(
+    //   await wallet.getAddress(),
+    //   message,
+    //   sig,
+    //   await signer.getChainId()
+    // )
 
-    const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
-    // if (!match) throw new Error('recovery address does not match')
-    console.log('address match?', match)
+    // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
+    // // if (!match) throw new Error('recovery address does not match')
+    // console.log('address match?', match)
   }
 
   const signTypedData = async () => {
@@ -278,11 +275,10 @@ And that has made all the difference.`
     const signer = wallet.getSigner()
 
     const sig = await signer.signTypedData(typedData.domain, typedData.types, typedData.message)
-    // const sig = await wallet.commands.signTypedData(typedData.domain, typedData.types, typedData.value)
     console.log('signature:', sig)
 
     // validate
-    const isValid = await wallet.commands.isValidTypedDataSignature(
+    const isValid = await wallet.utils.isValidTypedDataSignature(
       await wallet.getAddress(),
       typedData,
       sig,
@@ -292,24 +288,20 @@ And that has made all the difference.`
     if (!isValid) throw new Error('sig invalid')
 
     // recover
-    const walletConfig = await wallet.commands.recoverWalletConfigFromTypedData(
-      await wallet.getAddress(),
-      typedData,
-      sig,
-      await signer.getChainId()
-    )
-    console.log('recovered walletConfig:', walletConfig)
+    // const walletConfig = await wallet.utils.recoverWalletConfigFromTypedData(
+    //   await wallet.getAddress(),
+    //   typedData,
+    //   sig,
+    //   await signer.getChainId()
+    // )
+    // console.log('recovered walletConfig:', walletConfig)
 
-    const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
-    if (!match) throw new Error('recovery address does not match')
-    console.log('address match?', match)
+    // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
+    // if (!match) throw new Error('recovery address does not match')
+    // console.log('address match?', match)
   }
 
   const signETHAuth = async () => {
-    // wallet.logout()
-
-    // debugger
-
     const address = await wallet.getAddress()
 
     const authSigner = await wallet.getAuthSigner()
@@ -323,13 +315,8 @@ And that has made all the difference.`
     proof.setIssuedAtNow()
     proof.setExpiryIn(1000000)
 
-    // TODO: chainId on this proof..?
-
     const messageTypedData = proof.messageTypedData()
 
-    // wallet.commands.signAuthorization() , etc.. also easier..
-
-    console.log('!messageTypedData BEFORE', messageTypedData)
     const digest = sequence.utils.encodeTypedDataDigest(messageTypedData)
     console.log('we expect digest:', digest)
 
@@ -337,19 +324,9 @@ And that has made all the difference.`
     const sig = await authSigner.signTypedData(messageTypedData.domain, messageTypedData.types, messageTypedData.message)
     console.log('signature:', sig)
 
-    wallet.closeWallet()
-
-    // TODO: we could add isValidETHAuthSignature()
-    // might make it easy so we dont think about the chainId ..?
-    // on the .commands. .. could work.. helpful, ya
-
-    console.log('!messageTypedData NOW.......', messageTypedData)
-    const digest2 = sequence.utils.encodeTypedDataDigest(messageTypedData)
-    console.log('DIGEST NOW........:', digest2)
-
 
     // validate
-    const isValid = await wallet.commands.isValidTypedDataSignature(
+    const isValid = await wallet.utils.isValidTypedDataSignature(
       await wallet.getAddress(),
       messageTypedData,
       sig,
@@ -360,24 +337,24 @@ And that has made all the difference.`
 
     // recover
     // TODO/NOTE: in order to recover this, the wallet needs to be updated on-chain,
-    // or we need the init config.. check if its deployed and updated?
-    const walletConfig = await wallet.commands.recoverWalletConfigFromTypedData(
-      await wallet.getAddress(),
-      messageTypedData,
-      sig,
-      authChainId
-    )
+    // or we need the init config.. check if its deployed and updated
+    // const walletConfig = await wallet.utils.recoverWalletConfigFromTypedData(
+    //   await wallet.getAddress(),
+    //   messageTypedData,
+    //   sig,
+    //   authChainId
+    // )
 
-    console.log('recovered walletConfig:', walletConfig)
-    const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
-    // if (!match) throw new Error('recovery address does not match')
-    console.log('address match?', match)
+    // console.log('recovered walletConfig:', walletConfig)
+    // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
+    // // if (!match) throw new Error('recovery address does not match')
+    // console.log('address match?', match)
   }
 
   const sendETH = async (signer?: sequence.provider.Web3Signer) => {
     signer = signer || wallet.getSigner() // select DefaultChain signer by default
 
-    console.log(`Transfer txn on ${signer.getChainId()} chainId......`)
+    console.log(`Transfer txn on ${signer.getChainId()} chainId`)
 
     // NOTE: on mainnet, the balance will be of ETH value
     // and on matic, the balance will be of MATIC value
