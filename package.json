@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "BROWSER=none react-scripts start",
     "start": "react-scripts start",
     "build": "BUILD_PATH='./dist' react-scripts build",
     "test": "react-scripts test",
