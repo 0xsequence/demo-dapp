@@ -3,7 +3,7 @@ Demo Dapp
 
 Dapp example on how to use Sequence Wallet. Covers how to connect, sign messages and send transctions.
 
-Try this dapp at: [https://0xsequence.github.io/demo-dapp/](https://0xsequence.github.io/demo-dapp/)
+Try this dapp at: [https://0xsequence.github.io/demo-dapp](https://0xsequence.github.io/demo-dapp)
 
 For complete documentation on Sequence, please see: [https://docs.sequence.build](https://docs.sequence.build)
 
