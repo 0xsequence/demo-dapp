@@ -1,417 +1,173 @@
-const colors = {
-  text: '#DFE6F2',
-  textsecondary: '#D3D3D3',
-  background: '#0B0E21',
-  primary: '#83C7F8',
-  secondary: '#253F81',
-  tertiary: '#1f346b',
-  inputbg: '#1a2d5b',
-  muted: '#191919',
-  highlight: '#29112c',
-  lightgrey: '#B3B3B3',
-  darkgrey: '#505050',
-  accent: '#E57134',
-  darken: 'rgba(0, 0, 0, .25)',
+import * as scales from '@radix-ui/colors'
+import { createStitches, PropertyValue, CSS as BaseCSS } from '@stitches/react'
 
-  black: 'black',
-  window: {
-    background: '#fff'
-  }
+type ScaleIndices = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+
+type Scale = {
+  [K in ScaleIndices as `tint${K}`]: string
 }
 
-const constants = {
-  navbar_height: 70,
-  max_page_width: 2200,
-  mobile_tab_height: 80
+const normalizeRadixColorScale = <T>(scale: T): Scale => {
+  return Object.values(scale).reduce((acc, x, idx) => {
+    return { ...acc, [`tint${idx + 1}`]: x }
+  }, {})
 }
 
-const space = [0, 4, 8, 16, 32, 64, 128]
-
-const breakpoints = ['680px', '900px', '1080px', '1440px', '1920px', '3440px']
-
-const fonts = {
-  body: 'Barlow, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
-  heading: 'inherit',
-  monospace: 'Menlo, monospace'
+export const breakpoints = {
+  sm: 0,
+  md: 480,
+  lg: 769,
+  xl: 1281
 }
 
-const fontSizes = [14, 16, 18, 20, 24, 30]
-
-const fontWeights = {
-  body: 400,
-  heading: 800,
-  bold: 700,
-  display: 800
-}
-
-const lineHeights = {
-  body: 1.5,
-  heading: 1.25
-}
-
-const sizes = {
-  sidebar: 256,
-  container: 1024
-}
-
-const text = {
-  heading: {
-    fontFamily: 'heading',
-    fontWeight: 'heading',
-    lineHeight: 'heading'
-  },
-  display: {
-    variant: 'text.heading',
-    fontSize: [5, 6],
-    fontWeight: 'display',
-    letterSpacing: '-0.03em',
-    mt: 3
-  },
-  caps: {
-    textTransform: 'uppercase',
-    letterSpacing: '0.2em'
-  }
-}
-
-const buttons = {
-  primary: {
-    color: 'background',
-    bg: 'primary',
-    fontWeight: 'bold',
-    px: 2,
-    py: 2,
-    cursor: 'pointer',
-    '&:hover': {
-      bg: 'secondary'
+export const { styled, css, keyframes, globalCss, getCssText, createTheme, theme, config } = createStitches({
+  theme: {
+    radii: {
+      1: '4px',
+      2: '8px',
+      3: '15px',
+      4: '30px',
+      5: '75px',
+      circle: '9999px' // 100%
     },
-    disabled: {
-      color: 'lightgrey',
-      bg: 'darkgrey',
-      cursor: 'not-allowed'
-    }
-  },
-  secondary: {
-    color: 'primary',
-    textTranform: 'uppercase',
-    bg: 'background',
-    border: '2px solid',
-    borderColor: 'primary',
-    cursor: 'pointer',
-    disabled: {
-      color: 'lightgrey',
-      borderColor: 'lightgrey',
-      border: '2px solid',
-      bg: 'background',
-      cursor: 'not-allowed'
-    }
-  },
-  tertiary: {
-    color: 'primary',
-    textTranform: 'uppercase',
-    bg: 'tertiary',
-    border: '2px solid',
-    borderColor: 'rgba(0,0,0,0)',
-    cursor: 'pointer',
-    disabled: {
-      color: 'lightgrey',
-      borderColor: 'lightgrey',
-      border: '2px solid',
-      bg: 'tertiary',
-      cursor: 'not-allowed'
-    }
-  }
-}
 
-const links = {
-  button: {
-    display: 'inline-block',
-    textDecoration: 'none',
-    fontWeight: 'bold',
-    fontSize: 2,
-    p: 3,
-    color: 'background',
-    bg: 'text',
-    borderRadius: 6,
-    '&:hover, &:focus': {
-      color: 'background',
-      bg: 'primary'
-    }
-  },
-  nav: {
-    display: 'block',
-    width: '100%',
-    px: 2,
-    py: 2,
-    color: 'inherit',
-    textDecoration: 'none',
-    fontSize: 1,
-    fontWeight: 'bold',
-    bg: 'transparent',
-    transitionProperty: 'background-color',
-    transitionTimingFunction: 'ease-out',
-    transitionDuration: '.2s',
-    borderRadius: 2,
-    '&:hover': {
-      bg: 'highlight'
+    space: {
+      0: 0,
+      1: 4,
+      2: 8,
+      3: 16,
+      4: 32,
+      5: 64,
+      6: 128
     },
-    '&.active': {
-      color: 'primary',
-      bg: 'highlight'
-    }
-  }
-}
 
-const badges = {
-  primary: {
-    color: 'background'
-  },
-  highlight: {
-    color: 'text',
-    bg: 'highlight'
-  },
-  accent: {
-    color: 'background',
-    bg: 'accent'
-  },
-  outline: {
-    color: 'primary',
-    bg: 'transparent',
-    boxShadow: 'inset 0 0 0 1px'
-  },
-  circle: {
-    height: 16,
-    minWidth: 16,
-    lineHeight: '16px',
-    textAlign: 'center',
-    borderRadius: 9999
-  }
-}
-
-const images = {
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 9999
-  }
-}
-
-const cards = {
-  primary: {
-    padding: 2,
-    borderRadius: 4,
-    boxShadow: '0 0 8px rgba(0, 0, 0, 0.125)'
-  },
-  compact: {
-    padding: 1,
-    borderRadius: 2,
-    border: '1px solid',
-    borderColor: 'muted'
-  }
-}
-
-const forms = {
-  label: {
-    fontSize: 1,
-    fontWeight: 'normal',
-    color: 'text'
-  },
-  input: {
-    borderColor: 'secondary',
-    borderRadius: '10px',
-    fontFamily: 'body',
-    bg: 'inputbg',
-    color: 'white',
-    py: 3,
-    '&:focus': {
-      borderColor: 'primary',
-      boxShadow: t => `0 0 0 1px ${t.colors.primary}`,
-      outline: 'none'
+    borderWidths: {
+      thin: '1px',
+      thick: '2px'
     },
-    '&::placeholder': {
-      color: 'text'
-    }
-  },
-  select: {
-    borderColor: 'secondary',
-    borderRadius: '10px',
-    color: 'text',
-    '&:focus': {
-      borderColor: 'primary',
-      boxShadow: t => `0 0 0 1px ${t.colors.primary}`,
-      outline: 'none'
-    }
-  },
-  textarea: {
-    borderColor: 'secondary',
-    borderRadius: '10px',
-    bg: 'inputbg',
-    color: 'text',
-    '&:focus': {
-      borderColor: 'primary',
-      boxShadow: t => `0 0 0 1px ${t.colors.primary}`,
-      outline: 'none'
-    }
-  },
-  slider: {
-    bg: 'muted'
-  }
-}
 
-const alerts = {
-  primary: {
-    color: 'background'
-  },
-  secondary: {
-    color: 'background',
-    bg: 'secondary'
-  },
-  accent: {
-    color: 'background',
-    bg: 'accent'
-  },
-  highlight: {
-    color: 'text',
-    bg: 'highlight'
-  }
-}
-
-const layout = {
-  container: {
-    p: 3
-    // maxWidth: 1024,
-  }
-}
-
-const styles = {
-  root: {
-    margin: 0,
-    fontFamily: 'body',
-    lineHeight: 'body',
-    fontWeight: 'body',
-    fontSize: 2
-  },
-  img: {
-    maxWidth: '100%',
-    height: 'auto'
-  },
-  h1: {
-    variant: 'text.heading',
-    fontFamily: 'Barlow',
-    fontWeight: 'bold',
-    fontSize: 5,
-    mb: 4
-  },
-  h2: {
-    variant: 'text.heading',
-    fontFamily: 'Barlow',
-    fontWeight: 'bold',
-    fontSize: 4,
-    mb: 4
-  },
-  h3: {
-    variant: 'text.heading',
-    fontFamily: 'Barlow',
-    fontWeight: 'bold',
-    fontSize: 3,
-    mb: 3
-  },
-  p: {
-    variant: 'text.heading',
-    fontFamily: 'Barlow',
-    fontWeight: 'regular',
-    fontSize: 2,
-    mb: 3
-  },
-  a: {
-    color: 'primary',
-    '&:hover': {
-      color: 'secondary'
-    }
-  },
-  pre: {
-    fontFamily: 'monospace',
-    fontSize: 1,
-    p: 3,
-    color: 'text',
-    bg: 'muted',
-    overflow: 'auto',
-    code: {
-      color: 'inherit'
+    zIndices: {
+      modal: 17
     },
-    variant: 'prism'
-  },
-  code: {
-    fontFamily: 'monospace',
-    fontSize: 1
-  },
-  inlineCode: {
-    fontFamily: 'monospace',
-    color: 'secondary',
-    bg: 'muted'
-  },
-  table: {
-    width: '100%',
-    my: 4,
-    borderCollapse: 'separate',
-    borderSpacing: 0
-    // [['th', 'td']]: {
-    //   textAlign: 'left',
-    //   py: '4px',
-    //   pr: '4px',
-    //   pl: 0,
-    //   borderColor: 'muted',
-    //   borderBottomStyle: 'solid',
-    // },
-  },
-  th: {
-    verticalAlign: 'bottom',
-    borderBottomWidth: '2px'
-  },
-  td: {
-    verticalAlign: 'top',
-    borderBottomWidth: '1px'
-  },
-  hr: {
-    border: 0,
-    borderBottom: '1px solid',
-    borderColor: 'secondary'
-  },
-  xray: {
-    '*': {
-      outline: '1px solid rgba(0, 192, 255, .25)'
+
+    colors: {
+      positive: '#2fc888',
+      negative: '#ff5454',
+      alert: '#F4B03E',
+
+      ...normalizeRadixColorScale(scales.grayDark),
+
+      tint1: 'black',
+
+      // Semantic vars
+      background: '$tint1',
+
+      inputBackground: '$tint2',
+
+      uiBackground: '$tint3',
+      uiBackgroundHover: '$tint4',
+      uiBackgroundActive: '$tint5',
+
+      border: '$tint6',
+      borderHover: '$tint7',
+      borderActive: '$tint8',
+
+      textTertiary: '$tint10',
+      textSecondary: '$tint11',
+      textPrimary: '$tint12',
+
+      gradientPrimary:
+        'linear-gradient(83.57deg, rgba(39, 249, 111, 0) 13.55%, rgba(34, 201, 161, 0.65) 98.35%), linear-gradient(265.77deg, rgba(97, 12, 235, 0) 44.4%, rgba(70, 27, 92, 0) 44.41%, #661A8D 110.31%), #4B35A2',
+      gradientPrimaryHover:
+        'linear-gradient(83.57deg, rgba(69, 255, 141, 0) 13.55%, rgba(44, 211, 171, 0.85) 98.35%), linear-gradient(265.77deg, rgba(127, 42, 255, 0) 44.4%, rgba(100, 57, 122, 0) 44.41%, #661a8d 110.31%), #8B75E2',
+      gradientSecondary:
+        'linear-gradient(83.57deg, rgba(0, 0, 0, 0) 13.55%, rgba(34, 201, 191, 0.25) 98.35%), linear-gradient(265.77deg, rgba(92, 47, 115, 0) 58.48%, rgba(92, 47, 115, 0.5) 110.31%), #FFFFFF',
+      gradientSecondaryHover:
+        'linear-gradient(83.57deg, rgba(0, 0, 0, 0) 13.55%, rgba(34, 201, 191, 0.15) 98.35%), linear-gradient(265.77deg, rgba(92, 47, 115, 0) 58.48%, rgba(92, 47, 115, 0.4) 110.31%), #FFFFFF',
+      gradientTertiary:
+        'linear-gradient(83.57deg, rgba(0, 0, 0, 0) 13.55%, rgba(34, 201, 191, 0.2) 98.35%), linear-gradient(265.77deg, rgba(92, 47, 115, 0) 58.48%, rgba(92, 47, 115, 0.3) 110.31%), rgba(74, 74, 74, 0.5)'
+    },
+
+    fonts: {
+      heading: 'Arial',
+      body: 'Arial',
+      code: 'monospace'
+    },
+
+    fontSizes: {
+      xs: '10px',
+      sm: '12px',
+      md: '16px',
+      lg: '18px',
+      xl: '20px',
+      xxl: '35px'
+    },
+
+    fontWeights: {
+      heading: 500,
+      body: 600,
+      bold: 700
+    },
+
+    letterSpacings: {
+      heading: '0.01em',
+      body: '0.02em'
+    },
+
+    fontStyles: {
+      normal: 'normal',
+      italic: 'italic'
+    },
+
+    lineHeights: {
+      heading: 1.2,
+      body: 1.4
     }
   },
-  navlink: {
-    display: 'inline-block',
-    fontWeight: 'bold',
-    color: 'inherit',
-    textDecoration: 'none',
-    ':hover,:focus': {
-      color: 'primary'
-    }
+
+  media: {
+    sm: `(min-width: ${breakpoints.sm}px)`,
+    md: `(min-width: ${breakpoints.md}px)`,
+    lg: `(min-width: ${breakpoints.lg}px)`,
+    xl: `(min-width: ${breakpoints.xl}px)`
+  },
+
+  utils: {
+    size: (value: PropertyValue<'width'>) => ({
+      width: value,
+      height: value
+    }),
+    mx: (value: PropertyValue<'marginLeft'>) => ({
+      marginLeft: value,
+      marginRight: value
+    }),
+    my: (value: PropertyValue<'marginLeft'>) => ({
+      marginTop: value,
+      marginBottom: value
+    }),
+    mt: (value: PropertyValue<'marginLeft'>) => ({
+      marginTop: value
+    }),
+    mb: (value: PropertyValue<'marginLeft'>) => ({
+      marginBottom: value
+    }),
+    px: (value: PropertyValue<'paddingLeft'>) => ({
+      paddingLeft: value,
+      paddingRight: value
+    }),
+    py: (value: PropertyValue<'paddingLeft'>) => ({
+      paddingTop: value,
+      paddingBottom: value
+    }),
+    pt: (value: PropertyValue<'paddingLeft'>) => ({
+      paddingTop: value
+    }),
+    pb: (value: PropertyValue<'paddingLeft'>) => ({
+      paddingBottom: value
+    })
   }
-}
+})
 
-export const theme = {
-  colors,
-  space,
-  breakpoints,
-  fonts,
-  fontSizes,
-  fontWeights,
-  lineHeights,
-  sizes,
-  text,
-  buttons,
-  links,
-  badges,
-  images,
-  cards,
-  forms,
-  alerts,
-  layout,
-  styles,
-  constants
-}
+export type Theme = typeof theme
 
-export type ThemeInterface = typeof theme
+export type CSS = BaseCSS<typeof config>
