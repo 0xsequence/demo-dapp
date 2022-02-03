@@ -3,6 +3,8 @@ Demo Dapp
 
 Dapp example on how to use Sequence Wallet. Covers how to connect, sign messages and send transctions.
 
+For complete documentation on Sequence, please see [https://docs.sequence.build](https://docs.sequence.build)
+
 ## Usage
 
 1. yarn
