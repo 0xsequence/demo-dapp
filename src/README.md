@@ -10,8 +10,8 @@ For complete documentation on Sequence, please see: [https://docs.sequence.build
 ## Usage
 
 1. yarn
-2. yarn start
-3. Open browser to http://localhost:3000 to access the demo dapp
+2. yarn dev
+3. Open browser to http://localhost:4000 to access the demo dapp
 4. Open browser inspector to see responses from the remote Sequence Wallet
 
 ## Development
