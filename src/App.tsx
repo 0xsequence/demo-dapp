@@ -16,7 +16,7 @@ import { Group } from './components/Group'
 
 configureLogger({ logLevel: 'DEBUG' })
 
-const HomeRoute = () => {
+const App = () => {
   const network = 'polygon'
   const wallet = new sequence.Wallet(network)
 
@@ -549,4 +549,4 @@ const Description = styled('p', typography.b1, {
 //   }
 // ]
 
-export default React.memo(HomeRoute)
+export default React.memo(App)
