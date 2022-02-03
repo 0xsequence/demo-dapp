@@ -3,6 +3,7 @@
   "description": "Ethereum Demo Dapp built on Sequence stack",
   "version": "0.1.0",
   "private": true,
+  "homepage": "demo-dapp",
   "scripts": {
     "dev": "BROWSER=none yarn start",
     "start": "PORT=4000 react-scripts start",
