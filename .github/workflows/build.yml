@@ -1,0 +1,33 @@
+name: build dapp
+
+on:
+  push:
+   branches:
+    - master
+
+jobs:
+  build:
+   runs-on: ubuntu-latest
+   name: Build and Push
+   steps:
+    - name: git-checkout
+      uses: actions/checkout@v2
+      with:
+        lfs: true
+    
+    - name: Install dependencies
+      run: |
+        npm install -g yarn
+        yarn install
+    
+    - name: Build
+      run: yarn dist
+      
+    - name: Push
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: build
+        FOLDER: build
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MESSAGE: "Build: ({sha}) {msg}"
