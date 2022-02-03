@@ -148,6 +148,7 @@ const clientConfig = {
     new HtmlWebpackPlugin({
       inject: true,
       template: 'src/index.html',
+      publicPath: '',
       templateParameters: {
         gitcommit: process.env.GITCOMMIT
       }
