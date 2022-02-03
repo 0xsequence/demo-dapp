@@ -11,12 +11,12 @@ For complete documentation on Sequence, please see: [https://docs.sequence.build
 
 1. yarn
 2. yarn start
-3. Open browser to http://localhost:3000 to access the demo dapp
+3. Open browser to http://localhost:4000 to access the demo dapp
 4. Open browser inspector to see responses from the remote Sequence Wallet
 
 ## Development
 
-See https://github.com/0xsequence/demo-dapp/blob/master/src/routes/HomeRoute.tsx for the source
+See https://github.com/0xsequence/demo-dapp/blob/master/src/App.tsx for the source
 usage for a variety of functions. be sure t open your browser's dev inspector to see output.
 Think of these functions as a "cookbook" for how you can perform these functions in your dapps.
 

@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "BROWSER=none react-scripts start",
-    "start": "react-scripts start",
+    "dev": "BROWSER=none yarn start",
+    "start": "PORT=4000 react-scripts start",
     "build": "BUILD_PATH='./dist' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
