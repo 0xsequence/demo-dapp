@@ -8,7 +8,6 @@
     "dev": "BROWSER=none yarn start",
     "start": "PORT=4000 react-scripts start",
     "build": "BUILD_PATH='./dist' react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dist": "yarn build",
     "link-sequence": "yarn link 0xsequence @0xsequence/abi @0xsequence/api @0xsequence/auth @0xsequence/config @0xsequence/guard @0xsequence/multicall @0xsequence/network @0xsequence/provider @0xsequence/relayer @0xsequence/transactions @0xsequence/utils @0xsequence/wallet",
