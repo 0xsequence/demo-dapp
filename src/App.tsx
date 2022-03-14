@@ -1,24 +1,27 @@
-import React from 'react'
-import { ethers } from 'ethers'
+import React from "react";
+import { ethers } from "ethers";
 
-import { sequence } from '0xsequence'
+import { sequence } from "0xsequence";
 
-import { ETHAuth, Proof } from '@0xsequence/ethauth'
-import { ERC_20_ABI } from './constants/abi'
+import { ETHAuth, Proof } from "@0xsequence/ethauth";
+import { ERC_20_ABI } from "./constants/abi";
 //import { sequenceContext } from '@0xsequence/network'
 
-import { configureLogger } from '@0xsequence/utils'
-import { Button } from './components/Button'
-import { styled, typography } from './style'
+import { configureLogger } from "@0xsequence/utils";
+import { Button } from "./components/Button";
+import { styled, typography } from "./style";
 
-import logoUrl from './images/logo.svg'
-import { Group } from './components/Group'
+import logoUrl from "./images/logo.svg";
+import { Group } from "./components/Group";
 
-configureLogger({ logLevel: 'DEBUG' })
+configureLogger({ logLevel: "DEBUG" });
 
 const App = () => {
-  const network = 'polygon'
-  const wallet = new sequence.Wallet(network)
+  const network = "polygon";
+  const walletAppURL =
+    process.env.REACT_APP_WALLET_APP_URL || "https://sequence.app";
+
+  const wallet = new sequence.Wallet(network, { walletAppURL });
 
   // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
   // As well, make sure to comment out any other `const wallet = ..` statements.
@@ -28,130 +31,133 @@ const App = () => {
   // Example of changing the walletAppURL
   // const wallet = new sequence.Wallet(network, { walletAppURL: 'https://sequence.app' })
 
-  wallet.on('message', message => {
-    console.log('wallet event (message):', message)
-  })
+  wallet.on("message", (message) => {
+    console.log("wallet event (message):", message);
+  });
 
-  wallet.on('accountsChanged', p => {
-    console.log('wallet event (accountsChanged):', p)
-  })
+  wallet.on("accountsChanged", (p) => {
+    console.log("wallet event (accountsChanged):", p);
+  });
 
-  wallet.on('chainChanged', p => {
-    console.log('wallet event (chainChanged):', p)
-  })
+  wallet.on("chainChanged", (p) => {
+    console.log("wallet event (chainChanged):", p);
+  });
 
-  wallet.on('connect', p => {
-    console.log('wallet event (connect):', p)
-  })
+  wallet.on("connect", (p) => {
+    console.log("wallet event (connect):", p);
+  });
 
-  wallet.on('disconnect', p => {
-    console.log('wallet event (disconnect):', p)
-  })
+  wallet.on("disconnect", (p) => {
+    console.log("wallet event (disconnect):", p);
+  });
 
-  wallet.on('open', p => {
-    console.log('wallet event (open):', p)
-  })
+  wallet.on("open", (p) => {
+    console.log("wallet event (open):", p);
+  });
 
-  wallet.on('close', p => {
-    console.log('wallet event (close):', p)
-  })
+  wallet.on("close", (p) => {
+    console.log("wallet event (close):", p);
+  });
 
   const connect = async (authorize: boolean = false) => {
     const connectDetails = await wallet.connect({
-      app: 'Demo Dapp',
-      authorize
+      app: "Demo Dapp",
+      authorize,
       // keepWalletOpened: true
-    })
+    });
 
-    console.warn('connectDetails', { connectDetails })
+    console.warn("connectDetails", { connectDetails });
 
     if (authorize) {
-      const ethAuth = new ETHAuth()
+      const ethAuth = new ETHAuth();
 
       if (connectDetails.proof) {
-        const decodedProof = await ethAuth.decodeProof(connectDetails.proof.proofString, true)
+        const decodedProof = await ethAuth.decodeProof(
+          connectDetails.proof.proofString,
+          true
+        );
 
-        console.warn({ decodedProof })
+        console.warn({ decodedProof });
 
         const isValid = await wallet.utils.isValidTypedDataSignature(
           await wallet.getAddress(),
           connectDetails.proof.typedData,
           decodedProof.signature,
           await wallet.getAuthChainId()
-        )
-        console.log('isValid?', isValid)
-        if (!isValid) throw new Error('sig invalid')
+        );
+        console.log("isValid?", isValid);
+        if (!isValid) throw new Error("sig invalid");
       }
     }
-  }
+  };
 
   const disconnect = () => {
-    wallet.disconnect()
-  }
+    wallet.disconnect();
+  };
 
   const openWallet = () => {
-    wallet.openWallet()
-  }
+    wallet.openWallet();
+  };
 
   const closeWallet = () => {
-    wallet.closeWallet()
-  }
+    wallet.closeWallet();
+  };
 
   const isConnected = async () => {
-    console.log('isConnected?', wallet.isConnected())
-  }
+    console.log("isConnected?", wallet.isConnected());
+  };
 
   const isOpened = async () => {
-    console.log('isOpened?', wallet.isOpened())
-  }
+    console.log("isOpened?", wallet.isOpened());
+  };
 
   const getDefaultChainID = async () => {
-    console.log('TODO')
-  }
+    console.log("TODO");
+  };
 
   const getAuthChainID = async () => {
-    console.log('TODO')
-  }
+    console.log("TODO");
+  };
 
   const getChainID = async () => {
-    console.log('chainId:', await wallet.getChainId())
+    console.log("chainId:", await wallet.getChainId());
 
-    const provider = wallet.getProvider()
-    console.log('provider.getChainId()', await provider!.getChainId())
+    const provider = wallet.getProvider();
+    console.log("provider.getChainId()", await provider!.getChainId());
 
-    const signer = wallet.getSigner()
-    console.log('signer.getChainId()', await signer.getChainId())
-  }
+    const signer = wallet.getSigner();
+    console.log("signer.getChainId()", await signer.getChainId());
+  };
 
   const getAccounts = async () => {
-    console.log('getAddress():', await wallet.getAddress())
+    console.log("getAddress():", await wallet.getAddress());
 
-    const provider = wallet.getProvider()
-    console.log('accounts:', await provider!.listAccounts())
-  }
+    const provider = wallet.getProvider();
+    console.log("accounts:", await provider!.listAccounts());
+  };
 
   const getBalance = async () => {
-    const provider = wallet.getProvider()
-    const account = await wallet.getAddress()
-    const balanceChk1 = await provider!.getBalance(account)
-    console.log('balance check 1', balanceChk1.toString())
+    const provider = wallet.getProvider();
+    const account = await wallet.getAddress();
+    const balanceChk1 = await provider!.getBalance(account);
+    console.log("balance check 1", balanceChk1.toString());
 
-    const signer = wallet.getSigner()
-    const balanceChk2 = await signer.getBalance()
-    console.log('balance check 2', balanceChk2.toString())
-  }
+    const signer = wallet.getSigner();
+    const balanceChk2 = await signer.getBalance();
+    console.log("balance check 2", balanceChk2.toString());
+  };
 
   const getWalletState = async () => {
-    console.log('wallet state:', await wallet.getSigner().getWalletState())
-  }
+    console.log("wallet state:", await wallet.getSigner().getWalletState());
+  };
 
   const getNetworks = async () => {
-    console.log('networks:', await wallet.getNetworks())
-  }
+    console.log("networks:", await wallet.getNetworks());
+  };
 
   const signMessage = async () => {
-    console.log('signing message...')
-    const signer = wallet.getSigner()
+    console.log("signing message...");
+    const signer = wallet.getSigner();
 
     const message = `Two roads diverged in a yellow wood,
 Robert Frost poet
@@ -177,16 +183,21 @@ I shall be telling this with a sigh
 Somewhere ages and ages hence:
 Two roads diverged in a wood, and I—
 I took the one less traveled by,
-And that has made all the difference.`
+And that has made all the difference.`;
 
     // sign
-    const sig = await signer.signMessage(message)
-    console.log('signature:', sig)
+    const sig = await signer.signMessage(message);
+    console.log("signature:", sig);
 
     // validate
-    const isValid = await wallet.utils.isValidMessageSignature(await wallet.getAddress(), message, sig, await signer.getChainId())
-    console.log('isValid?', isValid)
-    if (!isValid) throw new Error('sig invalid')
+    const isValid = await wallet.utils.isValidMessageSignature(
+      await wallet.getAddress(),
+      message,
+      sig,
+      await signer.getChainId()
+    );
+    console.log("isValid?", isValid);
+    if (!isValid) throw new Error("sig invalid");
 
     // recover
     // const walletConfig = await wallet.utils.recoverWalletConfigFromMessage(
@@ -200,32 +211,45 @@ And that has made all the difference.`
     // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
     // if (!match) throw new Error('recovery address does not match')
     // console.log('address match?', match)
-  }
+  };
 
   const signAuthMessage = async () => {
-    console.log('signing message on AuthChain...')
-    const signer = await wallet.getAuthSigner()
+    console.log("signing message on AuthChain...");
+    const signer = await wallet.getAuthSigner();
 
-    const message = 'Hi there! Please sign this message, 123456789, thanks.'
+    const message = "Hi there! Please sign this message, 123456789, thanks.";
 
     // sign
-    const sig = await signer.signMessage(message, await signer.getChainId()) //, false)
-    console.log('signature:', sig)
+    const sig = await signer.signMessage(message, await signer.getChainId()); //, false)
+    console.log("signature:", sig);
 
     // here we have sig from above method, on defaultChain ..
     const notExpecting =
-      '0x0002000134ab8771a3f2f7556dab62622ce62224d898175eddfdd50c14127c5a2bb0c8703b3b3aadc3fa6a63dd2dc66107520bc90031c015aaa4bf381f6d88d9797e9b9f1c02010144a0c1cbe7b29d97059dba8bbfcab2405dfb8420000145693d051135be70f588948aeaa043bd3ac92d98057e4a2c0fbd0f7289e028f828a31c62051f0d5fb96768c635a16eacc325d9e537ca5c8c5d2635b8de14ebce1c02'
+      "0x0002000134ab8771a3f2f7556dab62622ce62224d898175eddfdd50c14127c5a2bb0c8703b3b3aadc3fa6a63dd2dc66107520bc90031c015aaa4bf381f6d88d9797e9b9f1c02010144a0c1cbe7b29d97059dba8bbfcab2405dfb8420000145693d051135be70f588948aeaa043bd3ac92d98057e4a2c0fbd0f7289e028f828a31c62051f0d5fb96768c635a16eacc325d9e537ca5c8c5d2635b8de14ebce1c02";
     if (sig === notExpecting) {
-      throw new Error('this sig is from the DefaultChain, not what we expected..')
+      throw new Error(
+        "this sig is from the DefaultChain, not what we expected.."
+      );
     }
 
     // validate
-    const isValid = await wallet.utils.isValidMessageSignature(await wallet.getAddress(), message, sig, await signer.getChainId())
-    console.log('isValid?', isValid)
-    if (!isValid) throw new Error('sig invalid')
+    const isValid = await wallet.utils.isValidMessageSignature(
+      await wallet.getAddress(),
+      message,
+      sig,
+      await signer.getChainId()
+    );
+    console.log("isValid?", isValid);
+    if (!isValid) throw new Error("sig invalid");
 
-    console.log('is wallet deployed on mainnet?', await wallet.isDeployed('mainnet'))
-    console.log('is wallet deployed on matic?', await wallet.isDeployed('polygon'))
+    console.log(
+      "is wallet deployed on mainnet?",
+      await wallet.isDeployed("mainnet")
+    );
+    console.log(
+      "is wallet deployed on matic?",
+      await wallet.isDeployed("polygon")
+    );
 
     // recover
     //
@@ -245,34 +269,38 @@ And that has made all the difference.`
     // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
     // // if (!match) throw new Error('recovery address does not match')
     // console.log('address match?', match)
-  }
+  };
 
   const signTypedData = async () => {
-    console.log('signing typedData...')
+    console.log("signing typedData...");
 
     const typedData: sequence.utils.TypedData = {
       domain: {
-        name: 'Ether Mail',
-        version: '1',
+        name: "Ether Mail",
+        version: "1",
         chainId: await wallet.getChainId(),
-        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
+        verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
       },
       types: {
         Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' }
-        ]
+          { name: "name", type: "string" },
+          { name: "wallet", type: "address" },
+        ],
       },
       message: {
-        name: 'Bob',
-        wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB'
-      }
-    }
+        name: "Bob",
+        wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+      },
+    };
 
-    const signer = wallet.getSigner()
+    const signer = wallet.getSigner();
 
-    const sig = await signer.signTypedData(typedData.domain, typedData.types, typedData.message)
-    console.log('signature:', sig)
+    const sig = await signer.signTypedData(
+      typedData.domain,
+      typedData.types,
+      typedData.message
+    );
+    console.log("signature:", sig);
 
     // validate
     const isValid = await wallet.utils.isValidTypedDataSignature(
@@ -280,9 +308,9 @@ And that has made all the difference.`
       typedData,
       sig,
       await signer.getChainId()
-    )
-    console.log('isValid?', isValid)
-    if (!isValid) throw new Error('sig invalid')
+    );
+    console.log("isValid?", isValid);
+    if (!isValid) throw new Error("sig invalid");
 
     // recover
     // const walletConfig = await wallet.utils.recoverWalletConfigFromTypedData(
@@ -296,34 +324,43 @@ And that has made all the difference.`
     // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
     // if (!match) throw new Error('recovery address does not match')
     // console.log('address match?', match)
-  }
+  };
 
   const signETHAuth = async () => {
-    const address = await wallet.getAddress()
+    const address = await wallet.getAddress();
 
-    const authSigner = await wallet.getAuthSigner()
-    console.log('AUTH CHAINID..', await authSigner.getChainId())
-    const authChainId = await authSigner.getChainId()
+    const authSigner = await wallet.getAuthSigner();
+    console.log("AUTH CHAINID..", await authSigner.getChainId());
+    const authChainId = await authSigner.getChainId();
 
-    const proof = new Proof()
-    proof.address = address
-    proof.claims.app = 'wee'
-    proof.claims.ogn = 'http://localhost:4000'
-    proof.setIssuedAtNow()
-    proof.setExpiryIn(1000000)
+    const proof = new Proof();
+    proof.address = address;
+    proof.claims.app = "wee";
+    proof.claims.ogn = "http://localhost:4000";
+    proof.setIssuedAtNow();
+    proof.setExpiryIn(1000000);
 
-    const messageTypedData = proof.messageTypedData()
+    const messageTypedData = proof.messageTypedData();
 
-    const digest = sequence.utils.encodeTypedDataDigest(messageTypedData)
-    console.log('we expect digest:', digest)
+    const digest = sequence.utils.encodeTypedDataDigest(messageTypedData);
+    console.log("we expect digest:", digest);
 
-    const sig = await authSigner.signTypedData(messageTypedData.domain, messageTypedData.types, messageTypedData.message)
-    console.log('signature:', sig)
+    const sig = await authSigner.signTypedData(
+      messageTypedData.domain,
+      messageTypedData.types,
+      messageTypedData.message
+    );
+    console.log("signature:", sig);
 
     // validate
-    const isValid = await wallet.utils.isValidTypedDataSignature(await wallet.getAddress(), messageTypedData, sig, authChainId)
-    console.log('isValid?', isValid)
-    if (!isValid) throw new Error('sig invalid')
+    const isValid = await wallet.utils.isValidTypedDataSignature(
+      await wallet.getAddress(),
+      messageTypedData,
+      sig,
+      authChainId
+    );
+    console.log("isValid?", isValid);
+    if (!isValid) throw new Error("sig invalid");
 
     // recover
     // TODO/NOTE: in order to recover this, the wallet needs to be updated on-chain,
@@ -339,12 +376,12 @@ And that has made all the difference.`
     // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
     // // if (!match) throw new Error('recovery address does not match')
     // console.log('address match?', match)
-  }
+  };
 
   const sendETH = async (signer?: sequence.provider.Web3Signer) => {
-    signer = signer || wallet.getSigner() // select DefaultChain signer by default
+    signer = signer || wallet.getSigner(); // select DefaultChain signer by default
 
-    console.log(`Transfer txn on ${signer.getChainId()} chainId`)
+    console.log(`Transfer txn on ${signer.getChainId()} chainId`);
 
     // NOTE: on mainnet, the balance will be of ETH value
     // and on matic, the balance will be of MATIC value
@@ -354,69 +391,78 @@ And that has made all the difference.`
     //   throw new Error(`wallet ${address} has 0 balance, so cannot transfer anything. Deposit and try again.`)
     // }
 
-    const toAddress = ethers.Wallet.createRandom().address
+    const toAddress = ethers.Wallet.createRandom().address;
 
     const tx1: sequence.transactions.Transaction = {
       delegateCall: false,
       revertOnError: false,
-      gasLimit: '0x55555',
+      gasLimit: "0x55555",
       to: toAddress,
-      value: ethers.utils.parseEther('1.234'),
-      data: '0x'
-    }
+      value: ethers.utils.parseEther("1.234"),
+      data: "0x",
+    };
 
     const tx2: sequence.transactions.Transaction = {
       delegateCall: false,
       revertOnError: false,
-      gasLimit: '0x55555',
+      gasLimit: "0x55555",
       to: toAddress,
-      value: ethers.utils.parseEther('0.4242'),
-      data: '0x'
-    }
+      value: ethers.utils.parseEther("0.4242"),
+      data: "0x",
+    };
 
-    const provider = signer.provider
+    const provider = signer.provider;
 
-    console.log(`balance of ${toAddress}, before:`, await provider.getBalance(toAddress))
+    console.log(
+      `balance of ${toAddress}, before:`,
+      await provider.getBalance(toAddress)
+    );
 
-    const txnResp = await signer.sendTransactionBatch([tx1, tx2])
-    await txnResp.wait()
+    const txnResp = await signer.sendTransactionBatch([tx1, tx2]);
+    await txnResp.wait();
 
-    console.log(`balance of ${toAddress}, after:`, await provider.getBalance(toAddress))
-  }
+    console.log(
+      `balance of ${toAddress}, after:`,
+      await provider.getBalance(toAddress)
+    );
+  };
 
   const sendDAI = async (signer?: sequence.provider.Web3Signer) => {
-    signer = signer || wallet.getSigner() // select DefaultChain signer by default
+    signer = signer || wallet.getSigner(); // select DefaultChain signer by default
 
-    const toAddress = ethers.Wallet.createRandom().address
+    const toAddress = ethers.Wallet.createRandom().address;
 
-    const amount = ethers.utils.parseUnits('5', 18)
+    const amount = ethers.utils.parseUnits("5", 18);
 
-    const daiContractAddress = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063' // (DAI address on Polygon)
+    const daiContractAddress = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"; // (DAI address on Polygon)
 
     const tx: sequence.transactions.Transaction = {
       delegateCall: false,
       revertOnError: false,
-      gasLimit: '0x55555',
+      gasLimit: "0x55555",
       to: daiContractAddress,
       value: 0,
-      data: new ethers.utils.Interface(ERC_20_ABI).encodeFunctionData('transfer', [toAddress, amount.toHexString()])
-    }
+      data: new ethers.utils.Interface(ERC_20_ABI).encodeFunctionData(
+        "transfer",
+        [toAddress, amount.toHexString()]
+      ),
+    };
 
-    const txnResp = await signer.sendTransactionBatch([tx])
-    await txnResp.wait()
-  }
+    const txnResp = await signer.sendTransactionBatch([tx]);
+    await txnResp.wait();
+  };
 
   const sendETHSidechain = async () => {
     // const signer = wallet.getSigner(137)
     // Select network that isn't the DefaultChain..
-    const networks = await wallet.getNetworks()
-    const n = networks.find(n => n.isAuthChain)
-    sendETH(wallet.getSigner(n))
-  }
+    const networks = await wallet.getNetworks();
+    const n = networks.find((n) => n.isAuthChain);
+    sendETH(wallet.getSigner(n));
+  };
 
   const send1155Tokens = async () => {
-    console.log('TODO')
-  }
+    console.log("TODO");
+  };
 
   // const sendBatchTransaction = async () => {
   //   console.log('TODO')
@@ -426,8 +472,12 @@ And that has made all the difference.`
     <Container>
       <SequenceLogo alt="logo" src={logoUrl} />
 
-      <Title>Demo Dapp ({network && network.length > 0 ? network : 'mainnet'})</Title>
-      <Description>Please open your browser dev inspector to view output of functions below</Description>
+      <Title>
+        Demo Dapp ({network && network.length > 0 ? network : "mainnet"})
+      </Title>
+      <Description>
+        Please open your browser dev inspector to view output of functions below
+      </Description>
 
       <Group label="Connection" layout="grid">
         <Button onClick={() => connect()}>Connect</Button>
@@ -452,7 +502,9 @@ And that has made all the difference.`
       <Group label="Signing" layout="grid">
         <Button onClick={() => signMessage()}>Sign Message</Button>
         <Button onClick={() => signTypedData()}>Sign TypedData</Button>
-        <Button onClick={() => signAuthMessage()}>Sign Message on AuthChain</Button>
+        <Button onClick={() => signAuthMessage()}>
+          Sign Message on AuthChain
+        </Button>
         <Button onClick={() => signETHAuth()}>Sign ETHAuth</Button>
       </Group>
 
@@ -464,28 +516,28 @@ And that has made all the difference.`
         {/* <Button onClick={() => sendBatchTransaction()}>Send Batch Txns</Button> */}
       </Group>
     </Container>
-  )
-}
+  );
+};
 
-const Container = styled('div', {
-  padding: '80px 25px 80px',
-  margin: '0 auto',
-  maxWidth: '720px'
-})
+const Container = styled("div", {
+  padding: "80px 25px 80px",
+  margin: "0 auto",
+  maxWidth: "720px",
+});
 
-const SequenceLogo = styled('img', {
-  height: '40px'
-})
+const SequenceLogo = styled("img", {
+  height: "40px",
+});
 
-const Title = styled('h1', typography.h1, {
-  color: '$textPrimary',
-  fontSize: '25px'
-})
+const Title = styled("h1", typography.h1, {
+  color: "$textPrimary",
+  fontSize: "25px",
+});
 
-const Description = styled('p', typography.b1, {
-  color: '$textSecondary',
-  marginBottom: '15px'
-})
+const Description = styled("p", typography.b1, {
+  color: "$textSecondary",
+  marginBottom: "15px",
+});
 
 // SequenceLogo.defaultProps = logoUrl
 
@@ -549,4 +601,4 @@ const Description = styled('p', typography.b1, {
 //   }
 // ]
 
-export default React.memo(App)
+export default React.memo(App);
