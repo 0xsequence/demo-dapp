@@ -13,7 +13,7 @@ import { styled, typography } from "./style";
 
 import logoUrl from "./images/logo.svg";
 import { Group } from "./components/Group";
-import { OpenWalletIntent } from "0xsequence/dist/declarations/src/provider";
+import { OpenWalletIntent, Settings } from "@0xsequence/provider";
 
 configureLogger({ logLevel: "DEBUG" });
 
@@ -60,14 +60,21 @@ const App = () => {
     console.log("wallet event (close):", p);
   });
 
-  const connect = async (authorize: boolean = false) => {
+  const connect = async (
+    authorize: boolean = false,
+    withSettings: boolean = false
+  ) => {
     const connectDetails = await wallet.connect({
       app: "Demo Dapp",
       authorize,
       keepWalletOpened: true,
-      // theme: 'light',
-      // includedPaymentProviders: ["moonpay"],
-      // defaultFundingCurrency: "eth",
+      ...(withSettings && {
+        settings: {
+          theme: { name: "light", setAsDefault: true },
+          includedPaymentProviders: ["moonpay"],
+          defaultFundingCurrency: "matic",
+        },
+      }),
     });
 
     console.warn("connectDetails", { connectDetails });
@@ -103,18 +110,21 @@ const App = () => {
     wallet.openWallet();
   };
 
-  const openWalletWithConnectOptions = () => {
+  const openWalletWithSettings = () => {
+    const settings: Settings = {
+      theme: { name: "goldDark", setAsDefault: false },
+      includedPaymentProviders: ["moonpay", "ramp"],
+      defaultFundingCurrency: "eth",
+      lockFundingCurrencyToDefault: false,
+    };
     const intent: OpenWalletIntent = {
       type: "openWithOptions",
       options: {
-        app: "Your Dapp name",
-        theme: "light",
-        includedPaymentProviders: ["moonpay", "wyre"],
-        defaultFundingCurrency: "eth",
-        lockFundingCurrencyToDefault: false,
+        settings: settings,
       },
     };
-    wallet.openWallet("wallet/add-funds", intent);
+    const path = "wallet/add-funds";
+    wallet.openWallet(path, intent);
   };
 
   const closeWallet = () => {
@@ -500,10 +510,13 @@ And that has made all the difference.`;
       <Group label="Connection" layout="grid">
         <Button onClick={() => connect()}>Connect</Button>
         <Button onClick={() => connect(true)}>Connect & Auth</Button>
+        <Button onClick={() => connect(true, true)}>
+          Connect with Settings
+        </Button>
         <Button onClick={() => disconnect()}>Disconnect</Button>
         <Button onClick={() => openWallet()}>Open Wallet</Button>
-        <Button onClick={() => openWalletWithConnectOptions()}>
-          Open Wallet with Options
+        <Button onClick={() => openWalletWithSettings()}>
+          Open Wallet with Settings
         </Button>
         <Button onClick={() => closeWallet()}>Close Wallet</Button>
         <Button onClick={() => isConnected()}>Is Connected?</Button>
