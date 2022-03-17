@@ -5,7 +5,7 @@ import { sequence } from "0xsequence";
 
 import { ETHAuth, Proof } from "@0xsequence/ethauth";
 import { ERC_20_ABI } from "./constants/abi";
-//import { sequenceContext } from '@0xsequence/network'
+// import { sequenceContext } from '@0xsequence/network'
 
 import { configureLogger } from "@0xsequence/utils";
 import { Button } from "./components/Button";
@@ -13,6 +13,7 @@ import { styled, typography } from "./style";
 
 import logoUrl from "./images/logo.svg";
 import { Group } from "./components/Group";
+import { OpenWalletIntent } from "0xsequence/dist/declarations/src/provider";
 
 configureLogger({ logLevel: "DEBUG" });
 
@@ -63,7 +64,10 @@ const App = () => {
     const connectDetails = await wallet.connect({
       app: "Demo Dapp",
       authorize,
-      // keepWalletOpened: true
+      keepWalletOpened: true,
+      // theme: 'light',
+      // includedPaymentProviders: ["moonpay"],
+      // defaultFundingCurrency: "eth",
     });
 
     console.warn("connectDetails", { connectDetails });
@@ -97,6 +101,20 @@ const App = () => {
 
   const openWallet = () => {
     wallet.openWallet();
+  };
+
+  const openWalletWithConnectOptions = () => {
+    const intent: OpenWalletIntent = {
+      type: "openWithOptions",
+      options: {
+        app: "Your Dapp name",
+        theme: "light",
+        includedPaymentProviders: ["moonpay", "wyre"],
+        defaultFundingCurrency: "eth",
+        lockFundingCurrencyToDefault: false,
+      },
+    };
+    wallet.openWallet("wallet/add-funds", intent);
   };
 
   const closeWallet = () => {
@@ -484,6 +502,9 @@ And that has made all the difference.`;
         <Button onClick={() => connect(true)}>Connect & Auth</Button>
         <Button onClick={() => disconnect()}>Disconnect</Button>
         <Button onClick={() => openWallet()}>Open Wallet</Button>
+        <Button onClick={() => openWalletWithConnectOptions()}>
+          Open Wallet with Options
+        </Button>
         <Button onClick={() => closeWallet()}>Close Wallet</Button>
         <Button onClick={() => isConnected()}>Is Connected?</Button>
         <Button onClick={() => isOpened()}>Is Opened?</Button>
