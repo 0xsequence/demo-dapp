@@ -70,7 +70,7 @@ const App = () => {
       keepWalletOpened: true,
       ...(withSettings && {
         settings: {
-          theme: { name: "light", setAsDefault: true },
+          theme: "light",
           includedPaymentProviders: ["moonpay"],
           defaultFundingCurrency: "matic",
         },
@@ -112,7 +112,7 @@ const App = () => {
 
   const openWalletWithSettings = () => {
     const settings: Settings = {
-      theme: { name: "goldDark", setAsDefault: false },
+      theme: "goldDark",
       includedPaymentProviders: ["moonpay", "ramp"],
       defaultFundingCurrency: "eth",
       lockFundingCurrencyToDefault: false,
