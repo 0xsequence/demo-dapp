@@ -5,7 +5,7 @@ import { sequence } from "0xsequence";
 
 import { ETHAuth, Proof } from "@0xsequence/ethauth";
 import { ERC_20_ABI } from "./constants/abi";
-//import { sequenceContext } from '@0xsequence/network'
+// import { sequenceContext } from '@0xsequence/network'
 
 import { configureLogger } from "@0xsequence/utils";
 import { Button } from "./components/Button";
@@ -13,6 +13,7 @@ import { styled, typography } from "./style";
 
 import logoUrl from "./images/logo.svg";
 import { Group } from "./components/Group";
+import { OpenWalletIntent, Settings } from "@0xsequence/provider";
 
 configureLogger({ logLevel: "DEBUG" });
 
@@ -59,11 +60,21 @@ const App = () => {
     console.log("wallet event (close):", p);
   });
 
-  const connect = async (authorize: boolean = false) => {
+  const connect = async (
+    authorize: boolean = false,
+    withSettings: boolean = false
+  ) => {
     const connectDetails = await wallet.connect({
       app: "Demo Dapp",
       authorize,
-      // keepWalletOpened: true
+      keepWalletOpened: true,
+      ...(withSettings && {
+        settings: {
+          theme: "light",
+          includedPaymentProviders: ["moonpay"],
+          defaultFundingCurrency: "matic",
+        },
+      }),
     });
 
     console.warn("connectDetails", { connectDetails });
@@ -97,6 +108,23 @@ const App = () => {
 
   const openWallet = () => {
     wallet.openWallet();
+  };
+
+  const openWalletWithSettings = () => {
+    const settings: Settings = {
+      theme: "goldDark",
+      includedPaymentProviders: ["moonpay", "ramp"],
+      defaultFundingCurrency: "eth",
+      lockFundingCurrencyToDefault: false,
+    };
+    const intent: OpenWalletIntent = {
+      type: "openWithOptions",
+      options: {
+        settings: settings,
+      },
+    };
+    const path = "wallet/add-funds";
+    wallet.openWallet(path, intent);
   };
 
   const closeWallet = () => {
@@ -482,8 +510,14 @@ And that has made all the difference.`;
       <Group label="Connection" layout="grid">
         <Button onClick={() => connect()}>Connect</Button>
         <Button onClick={() => connect(true)}>Connect & Auth</Button>
+        <Button onClick={() => connect(true, true)}>
+          Connect with Settings
+        </Button>
         <Button onClick={() => disconnect()}>Disconnect</Button>
         <Button onClick={() => openWallet()}>Open Wallet</Button>
+        <Button onClick={() => openWalletWithSettings()}>
+          Open Wallet with Settings
+        </Button>
         <Button onClick={() => closeWallet()}>Close Wallet</Button>
         <Button onClick={() => isConnected()}>Is Connected?</Button>
         <Button onClick={() => isOpened()}>Is Opened?</Button>
