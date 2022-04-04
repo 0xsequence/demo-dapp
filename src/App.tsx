@@ -69,6 +69,7 @@ const App = () => {
       authorize,
       keepWalletOpened: true,
       ...(withSettings && {
+        networkId: "polygon",
         settings: {
           theme: "light",
           includedPaymentProviders: ["moonpay"],
