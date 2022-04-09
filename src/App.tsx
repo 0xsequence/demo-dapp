@@ -448,7 +448,8 @@ And that has made all the difference.`;
     );
 
     const txnResp = await signer.sendTransactionBatch([tx1, tx2]);
-    await txnResp.wait();
+    // await txnResp.wait(); // optional as sendTransactionBatch already waits for the receipt
+    console.log('txnResponse:', txnResp)
 
     console.log(
       `balance of ${toAddress}, after:`,
@@ -478,7 +479,8 @@ And that has made all the difference.`;
     };
 
     const txnResp = await signer.sendTransactionBatch([tx]);
-    await txnResp.wait();
+    // await txnResp.wait(); // optional as sendTransactionBatch already waits for the receipt
+    console.log('txnResponse:', txnResp)
   };
 
   const sendETHSidechain = async () => {
