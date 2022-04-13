@@ -219,6 +219,14 @@ And that has made all the difference.`;
     console.log("signature:", sig);
 
     // validate
+    const isValidHex = await wallet.utils.isValidMessageSignature(
+      await wallet.getAddress(),
+      ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message)),
+      sig,
+      await signer.getChainId()
+    );
+    console.log("isValidHex?", isValidHex);
+
     const isValid = await wallet.utils.isValidMessageSignature(
       await wallet.getAddress(),
       message,
@@ -246,7 +254,7 @@ And that has made all the difference.`;
     console.log("signing message on AuthChain...");
     const signer = await wallet.getAuthSigner();
 
-    const message = "Hi there! Please sign this message, 123456789, thanks.";
+    const message = "Hi there! Please sign this message, 123456789, thanks."
 
     // sign
     const sig = await signer.signMessage(message, await signer.getChainId()); //, false)
@@ -262,6 +270,15 @@ And that has made all the difference.`;
     }
 
     // validate
+    const isValidHex = await wallet.utils.isValidMessageSignature(
+      await wallet.getAddress(),
+      ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message)),
+      sig,
+      await signer.getChainId()
+    );
+    console.log("isValidHex?", isValidHex);
+
+
     const isValid = await wallet.utils.isValidMessageSignature(
       await wallet.getAddress(),
       message,
