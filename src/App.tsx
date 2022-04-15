@@ -12,6 +12,8 @@ import { Button } from "./components/Button";
 import { styled, typography } from "./style";
 
 import logoUrl from "./images/logo.svg";
+import skyweaverBannerUrl from "./images/skyweaver-banner.png";
+
 import { Group } from "./components/Group";
 import { OpenWalletIntent, Settings } from "@0xsequence/provider";
 
@@ -71,7 +73,8 @@ const App = () => {
       ...(withSettings && {
         networkId: "polygon",
         settings: {
-          theme: "light",
+          theme: "indigoDark",
+          bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`,
           includedPaymentProviders: ["moonpay"],
           defaultFundingCurrency: "matic",
         },
@@ -121,7 +124,7 @@ const App = () => {
     const intent: OpenWalletIntent = {
       type: "openWithOptions",
       options: {
-        settings: settings,
+        settings,
       },
     };
     const path = "wallet/add-funds";
@@ -254,7 +257,7 @@ And that has made all the difference.`;
     console.log("signing message on AuthChain...");
     const signer = await wallet.getAuthSigner();
 
-    const message = "Hi there! Please sign this message, 123456789, thanks."
+    const message = "Hi there! Please sign this message, 123456789, thanks.";
 
     // sign
     const sig = await signer.signMessage(message, await signer.getChainId()); //, false)
@@ -277,7 +280,6 @@ And that has made all the difference.`;
       await signer.getChainId()
     );
     console.log("isValidHex?", isValidHex);
-
 
     const isValid = await wallet.utils.isValidMessageSignature(
       await wallet.getAddress(),
@@ -466,7 +468,7 @@ And that has made all the difference.`;
 
     const txnResp = await signer.sendTransactionBatch([tx1, tx2]);
     // await txnResp.wait(); // optional as sendTransactionBatch already waits for the receipt
-    console.log('txnResponse:', txnResp)
+    console.log("txnResponse:", txnResp);
 
     console.log(
       `balance of ${toAddress}, after:`,
@@ -497,7 +499,7 @@ And that has made all the difference.`;
 
     const txnResp = await signer.sendTransactionBatch([tx]);
     // await txnResp.wait(); // optional as sendTransactionBatch already waits for the receipt
-    console.log('txnResponse:', txnResp)
+    console.log("txnResponse:", txnResp);
   };
 
   const sendETHSidechain = async () => {
