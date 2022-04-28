@@ -69,7 +69,7 @@ const App = () => {
     const connectDetails = await wallet.connect({
       app: "Demo Dapp",
       authorize,
-      keepWalletOpened: true,
+      // keepWalletOpened: true,
       ...(withSettings && {
         networkId: "polygon",
         settings: {
