@@ -71,7 +71,6 @@ const App = () => {
       authorize,
       // keepWalletOpened: true,
       ...(withSettings && {
-        networkId: "polygon",
         settings: {
           theme: "indigoDark",
           bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`,
@@ -148,7 +147,8 @@ const App = () => {
   };
 
   const getAuthChainID = async () => {
-    console.log("TODO");
+    const authChainId = await wallet.getAuthChainId();
+    console.log("auth chainId:", authChainId);
   };
 
   const getChainID = async () => {
