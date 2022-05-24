@@ -426,6 +426,21 @@ And that has made all the difference.`;
     // console.log('address match?', match)
   };
 
+  const estimateUnwrapGas = async () => {
+    const wmaticContractAddress = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
+    const wmaticInterface = new ethers.utils.Interface(['function withdraw(uint256 amount)']);
+
+    const tx: sequence.transactions.Transaction = {
+      to: wmaticContractAddress,
+      data: wmaticInterface.encodeFunctionData('withdraw', ['1000000000000000000'])
+    };
+
+    const provider = wallet.getProvider()!;
+    const estimate = await provider.estimateGas(tx);
+
+    console.log('estimated gas needed for wmatic withdrawal:', estimate.toString());
+  };
+
   const sendETH = async (signer?: sequence.provider.Web3Signer) => {
     signer = signer || wallet.getSigner(); // select DefaultChain signer by default
 
@@ -562,6 +577,10 @@ And that has made all the difference.`;
           Sign Message on AuthChain
         </Button>
         <Button onClick={() => signETHAuth()}>Sign ETHAuth</Button>
+      </Group>
+
+      <Group label="Simulation" layout="grid">
+        <Button onClick={() => estimateUnwrapGas()}>Estimate Unwrap Gas</Button>
       </Group>
 
       <Group label="Transactions" layout="grid">
