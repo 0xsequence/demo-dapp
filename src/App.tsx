@@ -427,18 +427,25 @@ And that has made all the difference.`;
   };
 
   const estimateUnwrapGas = async () => {
-    const wmaticContractAddress = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
-    const wmaticInterface = new ethers.utils.Interface(['function withdraw(uint256 amount)']);
+    const wmaticContractAddress = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
+    const wmaticInterface = new ethers.utils.Interface([
+      "function withdraw(uint256 amount)",
+    ]);
 
     const tx: sequence.transactions.Transaction = {
       to: wmaticContractAddress,
-      data: wmaticInterface.encodeFunctionData('withdraw', ['1000000000000000000'])
+      data: wmaticInterface.encodeFunctionData("withdraw", [
+        "1000000000000000000",
+      ]),
     };
 
     const provider = wallet.getProvider()!;
     const estimate = await provider.estimateGas(tx);
 
-    console.log('estimated gas needed for wmatic withdrawal:', estimate.toString());
+    console.log(
+      "estimated gas needed for wmatic withdrawal:",
+      estimate.toString()
+    );
   };
 
   const sendETH = async (signer?: sequence.provider.Web3Signer) => {
@@ -529,6 +536,27 @@ And that has made all the difference.`;
     console.log("TODO");
   };
 
+  const contractExample = async (signer?: sequence.provider.Web3Signer) => {
+    signer = signer || wallet.getSigner();
+
+    const abi = [
+      "function balanceOf(address owner) view returns (uint256)",
+      "function decimals() view returns (uint8)",
+      "function symbol() view returns (string)",
+
+      "function transfer(address to, uint amount) returns (bool)",
+
+      "event Transfer(address indexed from, address indexed to, uint amount)",
+    ];
+
+    // USD Coin (PoS) on Polygon
+    const address = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
+
+    const usdc = new ethers.Contract(address, abi, signer);
+
+    console.log("Token symbol:", await usdc.symbol());
+  };
+
   // const sendBatchTransaction = async () => {
   //   console.log('TODO')
   // }
@@ -589,6 +617,12 @@ And that has made all the difference.`;
         <Button onClick={() => sendDAI()}>Send DAI</Button>
         <Button onClick={() => send1155Tokens()}>Send ERC-1155 Tokens</Button>
         {/* <Button onClick={() => sendBatchTransaction()}>Send Batch Txns</Button> */}
+      </Group>
+
+      <Group label="Various" layout="grid">
+        <Button css={{ height: "60px" }} onClick={() => contractExample()}>
+          Contract Example (read token symbol)
+        </Button>
       </Group>
     </Container>
   );
