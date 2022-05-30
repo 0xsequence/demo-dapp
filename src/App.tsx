@@ -76,6 +76,7 @@ const App = () => {
           bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`,
           includedPaymentProviders: ["moonpay"],
           defaultFundingCurrency: "matic",
+          defaultPurchaseAmount: 111,
         },
       }),
     });
@@ -118,6 +119,7 @@ const App = () => {
       theme: "goldDark",
       includedPaymentProviders: ["moonpay", "ramp"],
       defaultFundingCurrency: "eth",
+      defaultPurchaseAmount: 420,
       lockFundingCurrencyToDefault: false,
     };
     const intent: OpenWalletIntent = {
