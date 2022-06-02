@@ -69,13 +69,14 @@ const App = () => {
     const connectDetails = await wallet.connect({
       app: "Demo Dapp",
       authorize,
-      // keepWalletOpened: true,
+      keepWalletOpened: true,
       ...(withSettings && {
         settings: {
           theme: "indigoDark",
           bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`,
           includedPaymentProviders: ["moonpay"],
           defaultFundingCurrency: "matic",
+          defaultPurchaseAmount: 111,
         },
       }),
     });
@@ -116,8 +117,9 @@ const App = () => {
   const openWalletWithSettings = () => {
     const settings: Settings = {
       theme: "goldDark",
-      includedPaymentProviders: ["moonpay", "ramp"],
+      includedPaymentProviders: ["moonpay", "ramp", "wyre"],
       defaultFundingCurrency: "eth",
+      defaultPurchaseAmount: 400,
       lockFundingCurrencyToDefault: false,
     };
     const intent: OpenWalletIntent = {
