@@ -185,7 +185,7 @@ const App = () => {
     console.log("networks:", await wallet.getNetworks())
   }
 
-  const signMessage = async (network: NetworkConfig) => {
+  const signMessage = async (network: NetworkConfig, counterfactual?: boolean) => {
     console.log("signing message...")
     const signer = wallet.getSigner()
 
@@ -216,7 +216,7 @@ I took the one less traveled by,
 And that has made all the difference.`
 
     // sign
-    const sig = await signer.signMessage(message, network)
+    const sig = await signer.signMessage(message, network, undefined, counterfactual)
     console.log("signature:", sig)
 
     // validate
@@ -251,7 +251,7 @@ And that has made all the difference.`
     // console.log('address match?', match)
   }
 
-  const signTypedData = async (network: NetworkConfig) => {
+  const signTypedData = async (network: NetworkConfig, counterfactual?: boolean) => {
     console.log("signing typedData...")
 
     const typedData: sequence.utils.TypedData = {
@@ -279,7 +279,9 @@ And that has made all the difference.`
       typedData.domain,
       typedData.types,
       typedData.message,
-      network
+      network,
+      undefined,
+      counterfactual
     )
     console.log("signature:", sig)
 
@@ -307,7 +309,7 @@ And that has made all the difference.`
     // console.log('address match?', match)
   }
 
-  const signETHAuth = async () => {
+  const signETHAuth = async (counterfactual?: boolean) => {
     const address = await wallet.getAddress()
 
     const authSigner = await wallet.getSigner(137)
@@ -329,7 +331,10 @@ And that has made all the difference.`
     const sig = await authSigner.signTypedData(
       messageTypedData.domain,
       messageTypedData.types,
-      messageTypedData.message
+      messageTypedData.message,
+      undefined,
+      undefined,
+      counterfactual
     )
     console.log("signature:", sig)
 
@@ -579,6 +584,13 @@ And that has made all the difference.`
         {networks && networks.map((n) => <Button onClick={() => signTypedData(n)}>Sign Typed Data on {n.name}</Button>)}
 
         <Button onClick={() => signETHAuth()}>Sign ETHAuth</Button>
+      </Group>
+
+      <Group label="Signing counterfactually" layout="grid">
+        {networks && networks.map((n) => <Button onClick={() => signMessage(n, true)}>Sign Message on {n.name}</Button>)}
+        {networks && networks.map((n) => <Button onClick={() => signTypedData(n, true)}>Sign Typed Data on {n.name}</Button>)}
+
+        <Button onClick={() => signETHAuth(true)}>Sign ETHAuth</Button>
       </Group>
 
       <Group label="Simulation" layout="grid">
