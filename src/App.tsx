@@ -500,6 +500,32 @@ And that has made all the difference.`;
     );
   };
 
+  const sendRinkebyUSDC = async (signer?: sequence.provider.Web3Signer) => {
+    signer = signer || wallet.getSigner(); // select DefaultChain signer by default
+
+    const toAddress = ethers.Wallet.createRandom().address;
+
+    const amount = ethers.utils.parseUnits("1", 1);
+
+    const daiContractAddress = "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b"; // (USDC address on Rinkeby)
+
+    const tx: sequence.transactions.Transaction = {
+      delegateCall: false,
+      revertOnError: false,
+      gasLimit: "0x55555",
+      to: daiContractAddress,
+      value: 0,
+      data: new ethers.utils.Interface(ERC_20_ABI).encodeFunctionData(
+        "transfer",
+        [toAddress, amount.toHexString()]
+      ),
+    };
+
+    const txnResp = await signer.sendTransactionBatch([tx], 4);
+    // await txnResp.wait(); // optional as sendTransactionBatch already waits for the receipt
+    console.log("txnResponse:", txnResp);
+  }
+
   const sendDAI = async (signer?: sequence.provider.Web3Signer) => {
     signer = signer || wallet.getSigner(); // select DefaultChain signer by default
 
@@ -619,6 +645,7 @@ And that has made all the difference.`;
         <Button onClick={() => sendDAI()}>Send DAI</Button>
         <Button onClick={() => send1155Tokens()}>Send ERC-1155 Tokens</Button>
         {/* <Button onClick={() => sendBatchTransaction()}>Send Batch Txns</Button> */}
+        <Button onClick={() => sendRinkebyUSDC()}>Send on Rinkeby</Button>
       </Group>
 
       <Group label="Various" layout="grid">
