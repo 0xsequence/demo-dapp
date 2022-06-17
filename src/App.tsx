@@ -20,19 +20,13 @@ import { OpenWalletIntent, Settings } from "@0xsequence/provider";
 configureLogger({ logLevel: "DEBUG" });
 
 const App = () => {
-  const network = "polygon";
-  const walletAppURL =
-    process.env.REACT_APP_WALLET_APP_URL || "https://sequence.app";
-
-  const wallet = new sequence.Wallet(network, { walletAppURL });
+  const network = 'polygon'
+  const wallet = new sequence.Wallet(network)
 
   // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
   // As well, make sure to comment out any other `const wallet = ..` statements.
   // const network = 'mumbai'
-  // const wallet = new sequence.Wallet(network)
-
-  // Example of changing the walletAppURL
-  // const wallet = new sequence.Wallet(network, { walletAppURL: 'https://sequence.app' })
+  // const wallet = new sequence.Wallet(network, { networkRpcUrl: 'https://matic-mumbai.chainstacklabs.com' })
 
   wallet.on("message", (message) => {
     console.log("wallet event (message):", message);
@@ -69,7 +63,7 @@ const App = () => {
     const connectDetails = await wallet.connect({
       app: "Demo Dapp",
       authorize,
-      keepWalletOpened: true,
+      // keepWalletOpened: true,
       ...(withSettings && {
         settings: {
           theme: "indigoDark",
