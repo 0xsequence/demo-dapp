@@ -575,7 +575,7 @@ And that has made all the difference.`
     const address = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
 
     const usdc = new ethers.Contract(address, abi, signer)
-    
+
     console.log("Token symbol:", await usdc.symbol())
 
     const balance = await usdc.balanceOf(await signer.getAddress())
@@ -592,6 +592,8 @@ And that has made all the difference.`
     const tokenBalances = await indexer.getTokenBalances({ accountAddress: accountAddress, includeMetadata: true })
     console.log('tokens in your account:', tokenBalances)
 
+    // NOTE: you can put any NFT/collectible address in the `contractAddress` field and it will return all of the balances + metadata.
+    // We use the Skyweaver production contract address here for demo purposes, but try another one :)
     const skyweaverCollectibles = await indexer.getTokenBalances({ accountAddress: accountAddress, includeMetadata: true, contractAddress: '0x631998e91476DA5B870D741192fc5Cbc55F5a52E' })
     console.log('skyweaver collectibles in your account:', skyweaverCollectibles)
   }
