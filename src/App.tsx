@@ -577,7 +577,10 @@ And that has made all the difference.`;
     const usdc = new ethers.Contract(address, abi, signer);
 
     console.log("Token symbol:", await usdc.symbol());
-  };
+
+    const balance = await usdc.balanceOf(await signer.getAddress())
+    console.log('Token Balance', balance.toString())
+  }
 
   // const sendBatchTransaction = async () => {
   //   console.log('TODO')
@@ -644,7 +647,7 @@ And that has made all the difference.`;
 
       <Group label="Various" layout="grid">
         <Button css={{ height: "60px" }} onClick={() => contractExample()}>
-          Contract Example (read token symbol)
+          Contract Example (read token symbol and balance)
         </Button>
       </Group>
     </Container>
