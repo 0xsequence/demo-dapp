@@ -585,7 +585,6 @@ And that has made all the difference.`
   const fetchTokenBalances = async () => {
     const signer = wallet.getSigner()
     const accountAddress = await signer.getAddress()
-    console.log(signer, accountAddress)
 
     const indexer = new sequence.indexer.SequenceIndexerClient(sequence.indexer.SequenceIndexerServices.POLYGON)
 
