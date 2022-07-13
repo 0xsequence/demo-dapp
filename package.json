@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "0xsequence": "^0.40.1",
-    "@0xsequence/ethauth": "0.6.0",
+    "@0xsequence/ethauth": "0.7.0",
     "@radix-ui/colors": "^0.1.8",
     "@stitches/react": "^1.2.6",
     "@testing-library/jest-dom": "^5.16.2",
