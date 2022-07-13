@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/demo-dapp/static/js/main.5e03e161.js",
+    "main.js": "/demo-dapp/static/js/main.e86b2866.js",
     "static/media/skyweaver-banner.png": "/demo-dapp/static/media/skyweaver-banner.d02dcf72956aafa42ed1.png",
     "static/media/logo.svg": "/demo-dapp/static/media/logo.d7c9fc677fe69678a0a3dea6090ba6e9.svg",
     "index.html": "/demo-dapp/index.html",
-    "main.5e03e161.js.map": "/demo-dapp/static/js/main.5e03e161.js.map"
+    "main.e86b2866.js.map": "/demo-dapp/static/js/main.e86b2866.js.map"
   },
   "entrypoints": [
-    "static/js/main.5e03e161.js"
+    "static/js/main.e86b2866.js"
   ]
 }
