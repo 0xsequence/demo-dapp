@@ -1,11 +1,9 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { ethers } from "ethers"
-
 import { sequence } from "0xsequence"
 
 import { ETHAuth, Proof } from "@0xsequence/ethauth"
 import { ERC_20_ABI } from "./constants/abi"
-// import { sequenceContext } from '@0xsequence/network'
 
 import { configureLogger } from "@0xsequence/utils"
 import { Button } from "./components/Button"
