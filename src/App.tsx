@@ -21,12 +21,12 @@ configureLogger({ logLevel: "DEBUG" })
 
 const App = () => {
   const network = 'polygon'
-  const wallet = new sequence.Wallet(network)
+  const wallet = sequence.initWallet(network)
 
   // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
   // As well, make sure to comment out any other `const wallet = ..` statements.
   // const network = 'mumbai'
-  // const wallet = new sequence.Wallet(network, { networkRpcUrl: 'https://matic-mumbai.chainstacklabs.com' })
+  // const wallet = sequence.initWallet(network, { networkRpcUrl: 'https://matic-mumbai.chainstacklabs.com' })
 
   wallet.on("message", (message) => {
     console.log("wallet event (message):", message)
@@ -60,6 +60,8 @@ const App = () => {
     authorize: boolean = false,
     withSettings: boolean = false
   ) => {
+    const wallet = sequence.getWallet()
+
     const connectDetails = await wallet.connect({
       app: "Demo Dapp",
       authorize,
@@ -101,14 +103,18 @@ const App = () => {
   }
 
   const disconnect = () => {
+    const wallet = sequence.getWallet()
     wallet.disconnect()
   }
 
   const openWallet = () => {
+    const wallet = sequence.getWallet()
     wallet.openWallet()
   }
 
   const openWalletWithSettings = () => {
+    const wallet = sequence.getWallet()
+
     const settings: Settings = {
       theme: "goldDark",
       includedPaymentProviders: ["moonpay", "ramp", "wyre"],
@@ -127,14 +133,17 @@ const App = () => {
   }
 
   const closeWallet = () => {
+    const wallet = sequence.getWallet()
     wallet.closeWallet()
   }
 
   const isConnected = async () => {
+    const wallet = sequence.getWallet()
     console.log("isConnected?", wallet.isConnected())
   }
 
   const isOpened = async () => {
+    const wallet = sequence.getWallet()
     console.log("isOpened?", wallet.isOpened())
   }
 
@@ -143,6 +152,8 @@ const App = () => {
   }
 
   const getAuthChainID = async () => {
+    const wallet = sequence.getWallet()
+
     const authChainId = await wallet.getAuthChainId()
     console.log("auth chainId:", authChainId)
   }
@@ -158,6 +169,8 @@ const App = () => {
   }
 
   const getAccounts = async () => {
+    const wallet = sequence.getWallet()
+
     console.log("getAddress():", await wallet.getAddress())
 
     const provider = wallet.getProvider()
@@ -165,6 +178,8 @@ const App = () => {
   }
 
   const getBalance = async () => {
+    const wallet = sequence.getWallet()
+
     const provider = wallet.getProvider()
     const account = await wallet.getAddress()
     const balanceChk1 = await provider!.getBalance(account)
@@ -180,10 +195,14 @@ const App = () => {
   }
 
   const getNetworks = async () => {
+    const wallet = sequence.getWallet()
+
     console.log("networks:", await wallet.getNetworks())
   }
 
   const signMessage = async () => {
+    const wallet = sequence.getWallet()
+
     console.log("signing message...")
     const signer = wallet.getSigner()
 
@@ -250,6 +269,8 @@ And that has made all the difference.`
   }
 
   const signAuthMessage = async () => {
+    const wallet = sequence.getWallet()
+
     console.log("signing message on AuthChain...")
     const signer = await wallet.getAuthSigner()
 
@@ -316,6 +337,8 @@ And that has made all the difference.`
   }
 
   const signTypedData = async () => {
+    const wallet = sequence.getWallet()
+
     console.log("signing typedData...")
 
     const typedData: sequence.utils.TypedData = {
@@ -371,6 +394,8 @@ And that has made all the difference.`
   }
 
   const signETHAuth = async () => {
+    const wallet = sequence.getWallet()
+
     const address = await wallet.getAddress()
 
     const authSigner = await wallet.getAuthSigner()
@@ -423,6 +448,8 @@ And that has made all the difference.`
   }
 
   const estimateUnwrapGas = async () => {
+    const wallet = sequence.getWallet()
+
     const wmaticContractAddress = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
     const wmaticInterface = new ethers.utils.Interface([
       "function withdraw(uint256 amount)",
@@ -445,6 +472,8 @@ And that has made all the difference.`
   }
 
   const sendETH = async (signer?: sequence.provider.Web3Signer) => {
+    const wallet = sequence.getWallet()
+
     signer = signer || wallet.getSigner() // select DefaultChain signer by default
 
     console.log(`Transfer txn on ${signer.getChainId()} chainId`)
@@ -495,6 +524,8 @@ And that has made all the difference.`
   }
 
   const sendRinkebyUSDC = async (signer?: sequence.provider.Web3Signer) => {
+    const wallet = sequence.getWallet()
+
     signer = signer || wallet.getSigner() // select DefaultChain signer by default
 
     const toAddress = ethers.Wallet.createRandom().address
@@ -521,6 +552,8 @@ And that has made all the difference.`
   }
 
   const sendDAI = async (signer?: sequence.provider.Web3Signer) => {
+    const wallet = sequence.getWallet()
+
     signer = signer || wallet.getSigner() // select DefaultChain signer by default
 
     const toAddress = ethers.Wallet.createRandom().address
@@ -547,6 +580,8 @@ And that has made all the difference.`
   }
 
   const sendETHSidechain = async () => {
+    const wallet = sequence.getWallet()
+
     // const signer = wallet.getSigner(137)
     // Select network that isn't the DefaultChain..
     const networks = await wallet.getNetworks()
@@ -559,6 +594,8 @@ And that has made all the difference.`
   }
 
   const contractExample = async (signer?: sequence.provider.Web3Signer) => {
+    const wallet = sequence.getWallet()
+
     signer = signer || wallet.getSigner()
 
     const abi = [
@@ -583,6 +620,8 @@ And that has made all the difference.`
   }
 
   const fetchTokenBalances = async () => {
+    const wallet = sequence.getWallet()
+
     const signer = wallet.getSigner()
     const accountAddress = await signer.getAddress()
 
@@ -672,21 +711,25 @@ And that has made all the difference.`
   )
 }
 
+// @ts-ignore
 const Container = styled("div", {
   padding: "80px 25px 80px",
   margin: "0 auto",
   maxWidth: "720px",
 })
 
+// @ts-ignore
 const SequenceLogo = styled("img", {
   height: "40px",
 })
 
+// @ts-ignore
 const Title = styled("h1", typography.h1, {
   color: "$textPrimary",
   fontSize: "25px",
 })
 
+// @ts-ignore
 const Description = styled("p", typography.b1, {
   color: "$textSecondary",
   marginBottom: "15px",
