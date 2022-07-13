@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { ethers } from "ethers"
 
 import { sequence } from "0xsequence"
@@ -19,42 +19,20 @@ import { OpenWalletIntent, Settings } from "@0xsequence/provider"
 
 configureLogger({ logLevel: "DEBUG" })
 
+// Configure Sequence wallet
+const network = 'polygon'
+sequence.initWallet(network)
+
+// NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
+// As well, make sure to comment out any other `const wallet = ..` statements.
+// const network = 'mumbai'
+// sequence.initWallet(network, { networkRpcUrl: 'https://matic-mumbai.chainstacklabs.com' })
+
+// App component
 const App = () => {
-  const network = 'polygon'
-  const wallet = sequence.initWallet(network)
 
-  // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
-  // As well, make sure to comment out any other `const wallet = ..` statements.
-  // const network = 'mumbai'
-  // const wallet = sequence.initWallet(network, { networkRpcUrl: 'https://matic-mumbai.chainstacklabs.com' })
-
-  wallet.on("message", (message) => {
-    console.log("wallet event (message):", message)
-  })
-
-  wallet.on("accountsChanged", (p) => {
-    console.log("wallet event (accountsChanged):", p)
-  })
-
-  wallet.on("chainChanged", (p) => {
-    console.log("wallet event (chainChanged):", p)
-  })
-
-  wallet.on("connect", (p) => {
-    console.log("wallet event (connect):", p)
-  })
-
-  wallet.on("disconnect", (p) => {
-    console.log("wallet event (disconnect):", p)
-  })
-
-  wallet.on("open", (p) => {
-    console.log("wallet event (open):", p)
-  })
-
-  wallet.on("close", (p) => {
-    console.log("wallet event (close):", p)
-  })
+  // Get sequence wallet instance
+  const wallet = sequence.getWallet()
 
   const connect = async (
     authorize: boolean = false,
@@ -703,7 +681,7 @@ And that has made all the difference.`
         <Button css={{ height: "60px" }} onClick={() => contractExample()}>
           Contract Example (read token symbol and balance)
         </Button>
-        <Button css={{ height: "60px" }}  onClick={() => fetchTokenBalances()}>
+        <Button css={{ height: "60px" }} onClick={() => fetchTokenBalances()}>
           Fetch Token Balances + Metadata
         </Button>
       </Group>
@@ -735,66 +713,32 @@ const Description = styled("p", typography.b1, {
   marginBottom: "15px",
 })
 
-// SequenceLogo.defaultProps = logoUrl
+// wallet.on("message", (message) => {
+//   console.log("wallet event (message):", message)
+// })
 
-// const erc1155Abi = [
-//   {
-//     inputs: [
-//       {
-//         internalType: 'address',
-//         name: '_from',
-//         type: 'address'
-//       },
-//       {
-//         internalType: 'address',
-//         name: '_to',
-//         type: 'address'
-//       },
-//       {
-//         internalType: 'uint256',
-//         name: '_id',
-//         type: 'uint256'
-//       },
-//       {
-//         internalType: 'uint256',
-//         name: '_amount',
-//         type: 'uint256'
-//       },
-//       {
-//         internalType: 'bytes',
-//         name: '_data',
-//         type: 'bytes'
-//       }
-//     ],
-//     name: 'safeTransferFrom',
-//     outputs: [],
-//     stateMutability: 'nonpayable',
-//     type: 'function'
-//   },
-//   {
-//     inputs: [
-//       {
-//         internalType: 'address',
-//         name: '_owner',
-//         type: 'address'
-//       },
-//       {
-//         internalType: 'uint256',
-//         name: '_id',
-//         type: 'uint256'
-//       }
-//     ],
-//     name: 'balanceOf',
-//     outputs: [
-//       {
-//         internalType: 'uint256',
-//         name: '',
-//         type: 'uint256'
-//       }
-//     ],
-//     stateMutability: 'view',
-//     type: 'function'
-//   }
-// ]
+// wallet.on("accountsChanged", (p) => {
+//   console.log("wallet event (accountsChanged):", p)
+// })
+
+// wallet.on("chainChanged", (p) => {
+//   console.log("wallet event (chainChanged):", p)
+// })
+
+// wallet.on("connect", (p) => {
+//   console.log("wallet event (connect):", p)
+// })
+
+// wallet.on("disconnect", (p) => {
+//   console.log("wallet event (disconnect):", p)
+// })
+
+// wallet.on("open", (p) => {
+//   console.log("wallet event (open):", p)
+// })
+
+// wallet.on("close", (p) => {
+//   console.log("wallet event (close):", p)
+// })
 
 export default React.memo(App)
