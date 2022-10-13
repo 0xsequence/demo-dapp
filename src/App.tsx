@@ -41,6 +41,10 @@ const App = () => {
       // keepWalletOpened: true,
       ...(withSettings && {
         settings: {
+          // Specify signInWithEmail with an email address to allow user automatically sign in with the email option.
+          // signInWithEmail: 'user@email.com',
+          // Specify signInOptions to pick the available sign in options.
+          // signInOptions: ['email', 'google', 'apple'],
           theme: 'indigoDark',
           bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`,
           includedPaymentProviders: ['moonpay'],
