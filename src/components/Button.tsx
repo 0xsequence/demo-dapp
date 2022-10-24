@@ -19,9 +19,9 @@ export const Button = styled('button', typography.button, {
     backgroundColor: '$uiBackgroundHover'
   },
 
-  '&.disabled': {
+  '&:disabled': {
     pointerEvents: 'none',
     cursor: 'default',
-    opacity: '0.5'
+    opacity: '0.6'
   }
 })
