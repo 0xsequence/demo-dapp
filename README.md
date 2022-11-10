@@ -17,7 +17,7 @@ For complete documentation on Sequence, please see: [https://docs.sequence.build
 ## Development
 
 See https://github.com/0xsequence/demo-dapp/blob/master/src/App.tsx for the source
-usage for a variety of functions. be sure t open your browser's dev inspector to see output.
+usage for a variety of functions. Be sure to open your browser's dev inspector to see output.
 Think of these functions as a "cookbook" for how you can perform these functions in your dapps.
 
 Also note, sequence.js is built on top of ethers.js, and is API-compatible.
