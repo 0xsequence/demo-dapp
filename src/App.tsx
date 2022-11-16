@@ -34,41 +34,16 @@ const App = () => {
   const [consoleLoading, setConsoleLoading] = useState<boolean>(false)
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
 
-  const disabledBtns = !isWalletConnected
+  // Get sequence wallet instance
+  const wallet = sequence.getWallet()
 
-  const appendConsoleLine = (message: string) => {
-    return (setConsoleMsg((prevState => {
-      return `${prevState}\n\n${message}`
-    })))
-  }
-  
-  const resetConsole = () => {
-    setConsoleMsg(null)
-    setConsoleLoading(true)
-  }
-
-  const addNewConsoleLine = (message: string) => {
-    setConsoleMsg((() => {
-      return (message)
-    }))
-  }
-
-  const consoleWelcomeMessage = () => {
-    setConsoleLoading(false)
-    setConsoleMsg('Status: Wallet not connected. Please connect wallet to use Methods')
-  }
-
-  const consoleErrorMessage = () => {
-    setConsoleLoading(false)
-    setConsoleMsg('An error occurred')
-  }
+  useEffect(() => {
+    setIsWalletConnected(wallet.isConnected())
+  }, [wallet])
 
   useEffect(() => {
     consoleWelcomeMessage()
-  }, [])
-
-  // Get sequence wallet instance
-  const wallet = sequence.getWallet()
+  }, [isWalletConnected])
 
   const connect = async (authorize: boolean = false, withSettings: boolean = false) => {
     if (isWalletConnected) {
@@ -536,7 +511,8 @@ const App = () => {
       const messageTypedData = proof.messageTypedData()
   
       const digest = sequence.utils.encodeTypedDataDigest(messageTypedData)
-      console.log('we expect digest:', digest)
+      console.log('proof claims', proof.claims)
+      console.log('we expect digest:', ethers.utils.hexlify(digest))
       appendConsoleLine(`we expect digest: ${digest}`)
   
       const sig = await authSigner.signTypedData(messageTypedData.domain, messageTypedData.types, messageTypedData.message)
@@ -820,6 +796,39 @@ const App = () => {
   //   console.log('TODO')
   // }
 
+  const appendConsoleLine = (message: string) => {
+    return (setConsoleMsg((prevState => {
+      return `${prevState}\n\n${message}`
+    })))
+  }
+  
+  const resetConsole = () => {
+    setConsoleMsg(null)
+    setConsoleLoading(true)
+  }
+
+  const addNewConsoleLine = (message: string) => {
+    setConsoleMsg((() => {
+      return (message)
+    }))
+  }
+
+  const consoleWelcomeMessage = () => {
+    setConsoleLoading(false)
+
+    if (isWalletConnected) {
+      setConsoleMsg('Status: Wallet is connected :)')
+    } else {
+      setConsoleMsg('Status: Wallet not connected. Please connect wallet first.')
+    }
+  }
+
+  const consoleErrorMessage = () => {
+    setConsoleLoading(false)
+    setConsoleMsg('An error occurred')
+  }
+
+
   return (
     <Container>
       <SequenceLogo alt="logo" src={logoUrl} />
@@ -832,48 +841,48 @@ const App = () => {
         <Button onClick={() => connect(true)}>Connect & Auth</Button>
         <Button onClick={() => connect(true, true)}>Connect with Settings</Button>
         <Button onClick={() => disconnect()}>Disconnect</Button>
-        <Button disabled={disabledBtns} onClick={() => openWallet()}>Open Wallet</Button>
-        <Button disabled={disabledBtns} onClick={() => openWalletWithSettings()}>Open Wallet with Settings</Button>
-        <Button disabled={disabledBtns} onClick={() => closeWallet()}>Close Wallet</Button>
-        <Button disabled={disabledBtns} onClick={() => isConnected()}>Is Connected?</Button>
-        <Button disabled={disabledBtns} onClick={() => isOpened()}>Is Opened?</Button>
-        <Button disabled={disabledBtns} onClick={() => getDefaultChainID()}>DefaultChain?</Button>
-        <Button disabled={disabledBtns} onClick={() => getAuthChainID()}>AuthChain?</Button>
+        <Button disabled={!isWalletConnected} onClick={() => openWallet()}>Open Wallet</Button>
+        <Button disabled={!isWalletConnected} onClick={() => openWalletWithSettings()}>Open Wallet with Settings</Button>
+        <Button disabled={!isWalletConnected} onClick={() => closeWallet()}>Close Wallet</Button>
+        <Button disabled={!isWalletConnected} onClick={() => isConnected()}>Is Connected?</Button>
+        <Button disabled={!isWalletConnected} onClick={() => isOpened()}>Is Opened?</Button>
+        <Button disabled={!isWalletConnected} onClick={() => getDefaultChainID()}>DefaultChain?</Button>
+        <Button disabled={!isWalletConnected} onClick={() => getAuthChainID()}>AuthChain?</Button>
       </Group>
 
       <Group label="State" layout="grid">
-        <Button disabled={disabledBtns} onClick={() => getChainID()}>ChainID</Button>
-        <Button disabled={disabledBtns} onClick={() => getNetworks()}>Networks</Button>
-        <Button disabled={disabledBtns} onClick={() => getAccounts()}>Get Accounts</Button>
-        <Button disabled={disabledBtns} onClick={() => getBalance()}>Get Balance</Button>
-        <Button disabled={disabledBtns} onClick={() => getWalletState()}>Get Wallet State</Button>
+        <Button disabled={!isWalletConnected} onClick={() => getChainID()}>ChainID</Button>
+        <Button disabled={!isWalletConnected} onClick={() => getNetworks()}>Networks</Button>
+        <Button disabled={!isWalletConnected} onClick={() => getAccounts()}>Get Accounts</Button>
+        <Button disabled={!isWalletConnected} onClick={() => getBalance()}>Get Balance</Button>
+        <Button disabled={!isWalletConnected} onClick={() => getWalletState()}>Get Wallet State</Button>
       </Group>
 
       <Group label="Signing" layout="grid">
-        <Button disabled={disabledBtns} onClick={() => signMessage()}>Sign Message</Button>
-        <Button disabled={disabledBtns} onClick={() => signTypedData()}>Sign TypedData</Button>
-        <Button disabled={disabledBtns} onClick={() => signAuthMessage()}>Sign Message on AuthChain</Button>
-        <Button disabled={disabledBtns} onClick={() => signETHAuth()}>Sign ETHAuth</Button>
+        <Button disabled={!isWalletConnected} onClick={() => signMessage()}>Sign Message</Button>
+        <Button disabled={!isWalletConnected} onClick={() => signTypedData()}>Sign TypedData</Button>
+        <Button disabled={!isWalletConnected} onClick={() => signAuthMessage()}>Sign Message on AuthChain</Button>
+        <Button disabled={!isWalletConnected} onClick={() => signETHAuth()}>Sign ETHAuth</Button>
       </Group>
 
       <Group label="Simulation" layout="grid">
-        <Button disabled={disabledBtns} onClick={() => estimateUnwrapGas()}>Estimate Unwrap Gas</Button>
+        <Button disabled={!isWalletConnected} onClick={() => estimateUnwrapGas()}>Estimate Unwrap Gas</Button>
       </Group>
 
       <Group label="Transactions" layout="grid">
-        <Button disabled={disabledBtns} onClick={() => sendETH()}>Send on DefaultChain</Button>
-        <Button disabled={disabledBtns} onClick={() => sendETHSidechain()}>Send on AuthChain</Button>
-        <Button disabled={disabledBtns} onClick={() => sendDAI()}>Send DAI</Button>
-        <Button disabled={disabledBtns} onClick={() => send1155Tokens()}>Send ERC-1155 Tokens</Button>
-        {/* <Button disabled={disabledBtns} onClick={() => sendBatchTransaction()}>Send Batch Txns</Button> */}
-        <Button disabled={disabledBtns} onClick={() => sendRinkebyUSDC()}>Send on Rinkeby</Button>
+        <Button disabled={!isWalletConnected} onClick={() => sendETH()}>Send on DefaultChain</Button>
+        <Button disabled={!isWalletConnected} onClick={() => sendETHSidechain()}>Send on AuthChain</Button>
+        <Button disabled={!isWalletConnected} onClick={() => sendDAI()}>Send DAI</Button>
+        <Button disabled={!isWalletConnected} onClick={() => send1155Tokens()}>Send ERC-1155 Tokens</Button>
+        {/* <Button disabled={!isWalletConnected} onClick={() => sendBatchTransaction()}>Send Batch Txns</Button> */}
+        <Button disabled={!isWalletConnected} onClick={() => sendRinkebyUSDC()}>Send on Rinkeby</Button>
       </Group>
 
       <Group label="Various" layout="grid">
-        <Button css={{ height: '60px' }} disabled={disabledBtns} onClick={() => contractExample()}>
+        <Button css={{ height: '60px' }} disabled={!isWalletConnected} onClick={() => contractExample()}>
           Contract Example (read token symbol and balance)
         </Button>
-        <Button css={{ height: '60px' }} disabled={disabledBtns} onClick={() => fetchTokenBalances()}>
+        <Button css={{ height: '60px' }} disabled={!isWalletConnected} onClick={() => fetchTokenBalances()}>
           Fetch Token Balances + Metadata
         </Button>
       </Group>
