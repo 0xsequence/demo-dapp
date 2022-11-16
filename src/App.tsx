@@ -43,6 +43,7 @@ const App = () => {
 
   useEffect(() => {
     consoleWelcomeMessage()
+    // eslint-disable-next-line
   }, [isWalletConnected])
 
   const connect = async (authorize: boolean = false, withSettings: boolean = false) => {
