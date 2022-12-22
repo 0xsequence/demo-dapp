@@ -10,11 +10,11 @@
     "build": "BUILD_PATH='./dist' react-scripts build",
     "eject": "react-scripts eject",
     "dist": "pnpm build",
-    "link-sequence": "yarn link 0xsequence @0xsequence/abi @0xsequence/api @0xsequence/auth @0xsequence/config @0xsequence/guard @0xsequence/indexer @0xsequence/metadata @0xsequence/multicall @0xsequence/network @0xsequence/provider @0xsequence/relayer @0xsequence/transactions @0xsequence/utils @0xsequence/wallet",
-    "unlink-sequence": "yarn unlink 0xsequence @0xsequence/abi @0xsequence/api @0xsequence/auth @0xsequence/config @0xsequence/guard @0xsequence/indexer @0xsequence/metadata @0xsequence/multicall @0xsequence/network @0xsequence/provider @0xsequence/relayer @0xsequence/transactions @0xsequence/utils @0xsequence/wallet"
+    "link-sequence": "../sequence.js/scripts/pnpm-link.sh link",
+    "unlink-sequence": "../sequence.js/scripts/pnpm-link.sh unlink"
   },
   "dependencies": {
-    "0xsequence": "^0.43.5",
+    "0xsequence": "^0.43.7",
     "@0xsequence/ethauth": "^0.8.1",
     "@0xsequence/provider": "^0.43.7",
     "@0xsequence/utils": "^0.43.7",

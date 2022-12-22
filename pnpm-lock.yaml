@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  0xsequence: ^0.43.5
+  0xsequence: ^0.43.7
   '@0xsequence/ethauth': ^0.8.1
   '@0xsequence/provider': ^0.43.7
   '@0xsequence/utils': ^0.43.7
