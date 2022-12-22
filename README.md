@@ -9,8 +9,8 @@ For complete documentation on Sequence, please see: [https://docs.sequence.build
 
 ## Usage
 
-1. yarn
-2. yarn start
+1. pnpm install
+2. pnpm start
 3. Open browser to http://localhost:4000 to access the demo dapp
 4. Open browser inspector to see responses from the remote Sequence Wallet
 
