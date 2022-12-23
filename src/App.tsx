@@ -62,6 +62,7 @@ const App = () => {
       const connectDetails = await wallet.connect({
         app: 'Demo Dapp',
         authorize,
+        askForEmail: true,
         // keepWalletOpened: true,
         ...(withSettings && {
           settings: {
