@@ -100,9 +100,13 @@ const App = () => {
           if (!isValid) throw new Error('sig invalid')
         }
       }
-      appendConsoleLine('Wallet connected!')
       setConsoleLoading(false)
-      setIsWalletConnected(true)
+      if (connectDetails.connected) {
+        appendConsoleLine('Wallet connected!')
+        setIsWalletConnected(true)
+      } else {
+        appendConsoleLine('Failed to connect wallet - ' + connectDetails.error)
+      }
     } catch (e) {
       console.error(e)
       consoleErrorMessage()
