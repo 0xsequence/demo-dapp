@@ -447,22 +447,67 @@ And that has made all the difference.
       console.log('signing typedData...')
       addNewConsoleLine('signing typedData...')
 
+      // const typedData: sequence.utils.TypedData = {
+      //   domain: {
+      //     name: 'Ether Mail',
+      //     version: '1',
+      //     chainId: await wallet.getChainId(),
+      //     verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
+      //   },
+      //   types: {
+      //     Person: [
+      //       { name: 'name', type: 'string' },
+      //       { name: 'wallet', type: 'address' }
+      //     ]
+      //   },
+      //   message: {
+      //     name: 'Bob',
+      //     wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB'
+      //   }
+      // }
+
       const typedData: sequence.utils.TypedData = {
-        domain: {
-          name: 'Ether Mail',
-          version: '1',
-          chainId: await wallet.getChainId(),
-          verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
-        },
         types: {
+          // EIP712Domain: [
+          //   { name: 'name', type: 'string' },
+          //   { name: 'version', type: 'string' },
+          //   { name: 'chainId', type: 'uint256' },
+          //   { name: 'verifyingContract', type: 'address' }
+          // ],
           Person: [
             { name: 'name', type: 'string' },
             { name: 'wallet', type: 'address' }
+          ],
+          Mail: [
+            { name: 'from', type: 'Person' },
+            { name: 'to', type: 'Person' },
+            { name: 'cc', type: 'Person[]' },
+            { name: 'contents', type: 'string' },
+            { name: 'attachements', type: 'string[]' }
           ]
         },
+        primaryType: 'Mail',
+        domain: {
+          name: 'Ether Mail',
+          version: '1',
+          chainId: 1,
+          verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
+        },
         message: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB'
+          from: {
+            name: 'Cow',
+            wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826'
+          },
+          to: {
+            name: 'Bob',
+            wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB'
+          },
+          cc: [
+            { name: 'Dev Team', wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB' },
+            { name: 'Accounting', wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB' }
+          ],
+          contents: 'Hello, Bob!',
+          attachements: ['cat.png', 'dog.png']
         }
       }
 
