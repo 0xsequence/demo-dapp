@@ -19,7 +19,7 @@ import { OpenWalletIntent, Settings } from '@0xsequence/provider'
 configureLogger({ logLevel: 'DEBUG' })
 
 // Configure Sequence wallet
-const walletAppURL = process.env.REACT_APP_WALLET_APP_URL || 'https://sequence.app'
+const walletAppURL = import.meta.env.REACT_APP_WALLET_APP_URL || 'https://sequence.app'
 const network = 'polygon'
 sequence.initWallet(network, { walletAppURL })
 
