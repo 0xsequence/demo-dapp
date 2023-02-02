@@ -23,6 +23,6 @@ export const button = style({
   ':disabled': {
     pointerEvents: 'none',
     cursor: 'default',
-    opacity: '0.6'
+    opacity: 0.6
   }
 })
