@@ -18,9 +18,9 @@ export const Console = ({ message, loading }: ConsoleProps) => {
 
   return (
     <Box borderRadius="md" padding="4" style={{ backgroundColor: 'grey' }} color="backgroundPrimary">
-      <div>Output:</div>
+      <Box style={{ fontFamily: 'monospace' }}>Output:</Box>
       <div>
-        <Box as="pre" style={{ whiteSpace: "break-spaces", overflowWrap: "anywhere" }} >
+        <Box as="pre" style={{ fontFamily: 'monospace', whiteSpace: "break-spaces", overflowWrap: "anywhere" }} >
           {message}
           {loading && getLoadingDots()}
           {<Box className={styles.cursor} display="inline-block" fontSize="large" lineHeight="4" style={{ top: '-4px', position: 'relative' }}>_</Box>}
