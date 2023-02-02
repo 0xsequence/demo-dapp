@@ -1,3 +1,4 @@
+import { Box, Image, Text } from '@0xsequence/design-system'
 import React, { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { sequence } from '0xsequence'
@@ -7,7 +8,6 @@ import { ERC_20_ABI } from './constants/abi'
 
 import { configureLogger } from '@0xsequence/utils'
 import { Button } from './components/Button'
-import { styled, typography } from './style'
 
 import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
@@ -889,13 +889,20 @@ And that has made all the difference.
   }
 
   return (
-    <Container>
-      <SequenceLogo alt="logo" src={logoUrl} />
+    <Box marginY="0" marginX="auto" paddingX="6" style={{ maxWidth: '720px', marginTop: '80px', marginBottom: '80px' }}>
+      <Box marginBottom="4">
+        <Image height="10" alt="logo" src={logoUrl} />
+      </Box>
 
-      <Title>Demo Dapp ({network && network.length > 0 ? network : 'mainnet'})</Title>
-      <Description>Please open your browser dev inspector to view output of functions below</Description>
+      <Box>
+        <Text color="text100" variant="large">Demo Dapp ({network && network.length > 0 ? network : 'mainnet'})</Text>
+      </Box>
 
-      <Group label="Connection" layout="grid">
+      <Box marginBottom="4">
+        <Text>Please open your browser dev inspector to view output of functions below</Text>
+      </Box>
+
+      <Group label="Connection">
         <Button onClick={() => connect()}>Connect</Button>
         <Button onClick={() => connect(true)}>Connect & Auth</Button>
         <Button onClick={() => connect(true, true)}>Connect with Settings</Button>
@@ -923,7 +930,7 @@ And that has made all the difference.
         </Button>
       </Group>
 
-      <Group label="State" layout="grid">
+      <Group label="State">
         <Button disabled={!isWalletConnected} onClick={() => getChainID()}>
           ChainID
         </Button>
@@ -941,7 +948,7 @@ And that has made all the difference.
         </Button>
       </Group>
 
-      <Group label="Signing" layout="grid">
+      <Group label="Signing">
         <Button disabled={!isWalletConnected} onClick={() => signMessage()}>
           Sign Message
         </Button>
@@ -956,13 +963,13 @@ And that has made all the difference.
         </Button>
       </Group>
 
-      <Group label="Simulation" layout="grid">
+      <Group label="Simulation">
         <Button disabled={!isWalletConnected} onClick={() => estimateUnwrapGas()}>
           Estimate Unwrap Gas
         </Button>
       </Group>
 
-      <Group label="Transactions" layout="grid">
+      <Group label="Transactions">
         <Button disabled={!isWalletConnected} onClick={() => sendETH()}>
           Send on DefaultChain
         </Button>
@@ -981,7 +988,7 @@ And that has made all the difference.
         </Button>
       </Group>
 
-      <Group label="Various" layout="grid">
+      <Group label="Various">
         <Button css={{ height: '60px' }} disabled={!isWalletConnected} onClick={() => contractExample()}>
           Contract Example (read token symbol and balance)
         </Button>
@@ -991,33 +998,9 @@ And that has made all the difference.
       </Group>
 
       <Console message={consoleMsg} loading={consoleLoading} />
-    </Container>
+    </Box>
   )
 }
-
-// @ts-ignore
-const Container = styled('div', {
-  padding: '80px 25px 80px',
-  margin: '0 auto',
-  maxWidth: '720px'
-})
-
-// @ts-ignore
-const SequenceLogo = styled('img', {
-  height: '40px'
-})
-
-// @ts-ignore
-const Title = styled('h1', typography.h1, {
-  color: '$textPrimary',
-  fontSize: '25px'
-})
-
-// @ts-ignore
-const Description = styled('p', typography.b1, {
-  color: '$textSecondary',
-  marginBottom: '15px'
-})
 
 // wallet.on("message", (message) => {
 //   console.log("wallet event (message):", message)
