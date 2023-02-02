@@ -13,5 +13,5 @@ export default defineConfig({
   server: {
     port: 4000
   },
-  base: '/demo-dapp/'
+  base: '/demo-dapp'
 });
