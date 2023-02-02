@@ -12,5 +12,6 @@ export default defineConfig({
   plugins: [react(), viteTsconfigPaths(), svgrPlugin(), vanillaExtractPlugin()],
   server: {
     port: 4000
-  }
+  },
+  base: '/demo-dapp/'
 });
