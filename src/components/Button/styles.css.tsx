@@ -8,7 +8,7 @@ export const button = style({
   cursor: 'pointer',
 
   color: vars.colors.text100,
-  backgroundColor: vars.colors.backgroundSecondary,
+  backgroundColor: vars.colors.buttonGlass,
   position: 'relative',
   width: '100%',
   height: '50px',
