@@ -14,6 +14,7 @@ import skyweaverBannerUrl from './images/skyweaver-banner.png'
 import { Console } from './components/Console'
 import { ConnectOptions, OpenWalletIntent, Settings } from '@0xsequence/provider'
 import { Group } from './components/Group'
+import { ChainId } from '@0xsequence/network'
 
 configureLogger({ logLevel: 'DEBUG' })
 
@@ -109,7 +110,7 @@ const App = () => {
             await wallet.getAddress(),
             connectDetails.proof.typedData,
             decodedProof.signature,
-            await wallet.getAuthChainId()
+            ChainId.POLYGON
           )
           console.log('isValid?', isValid)
           appendConsoleLine(`isValid?: ${isValid}`)
@@ -194,7 +195,7 @@ const App = () => {
       resetConsole()
       const wallet = sequence.getWallet()
 
-      const authChainId = await wallet.getAuthChainId()
+      const authChainId = ChainId.POLYGON
       console.log('auth chainId:', authChainId)
       addNewConsoleLine(`auth chainId: ${authChainId}`)
       setConsoleLoading(false)
@@ -386,7 +387,7 @@ And that has made all the difference.
 
       console.log('signing message on AuthChain...')
       addNewConsoleLine('signing message on AuthChain...')
-      const signer = await wallet.getAuthSigner()
+      const signer = await wallet.getSigner(ChainId.POLYGON)
 
       const message = 'Hi there! Please sign this message, 123456789, thanks.'
 
@@ -571,7 +572,7 @@ And that has made all the difference.
 
       const address = await wallet.getAddress()
 
-      const authSigner = await wallet.getAuthSigner()
+      const authSigner = await wallet.getSigner(ChainId.POLYGON)
       const chainId = await authSigner.getChainId()
       console.log('AUTH CHAINID..', chainId)
       addNewConsoleLine(`AUTH CHAINID.. ${chainId}`)
@@ -776,7 +777,7 @@ And that has made all the difference.
     try {
       const wallet = sequence.getWallet()
 
-      // const signer = wallet.getSigner(137)
+      // const signer = wallet.getSigner(ChainId.POLYGON)
       // Select network that isn't the DefaultChain..
       const networks = await wallet.getNetworks()
       const n = networks.find(n => n.isAuthChain)
