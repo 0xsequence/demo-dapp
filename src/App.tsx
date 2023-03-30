@@ -1,4 +1,4 @@
-import { Box, Image, Text } from '@0xsequence/design-system'
+import { Box, Image, Text, Button, ExternalLinkIcon, Divider, Card, TransactionIcon } from '@0xsequence/design-system'
 import React, { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { sequence } from '0xsequence'
@@ -7,14 +7,13 @@ import { ETHAuth, Proof } from '@0xsequence/ethauth'
 import { ERC_20_ABI } from './constants/abi'
 
 import { configureLogger } from '@0xsequence/utils'
-import { Button } from './components/Button'
 
 import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
 
 import { Console } from './components/Console'
-import { Group } from './components/Group'
 import { OpenWalletIntent, Settings } from '@0xsequence/provider'
+import { Group } from './components/Group'
 
 configureLogger({ logLevel: 'DEBUG' })
 
@@ -22,7 +21,6 @@ configureLogger({ logLevel: 'DEBUG' })
 const walletAppURL = import.meta.env.VITE_WALLET_APP_URL || 'https://sequence.app'
 const network = 'polygon'
 
-alert(walletAppURL)
 sequence.initWallet(network, { walletAppURL })
 
 // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
@@ -892,113 +890,181 @@ And that has made all the difference.
 
   return (
     <Box marginY="0" marginX="auto" paddingX="6" style={{ maxWidth: '720px', marginTop: '80px', marginBottom: '80px' }}>
-      <Box marginBottom="4">
-        <Image height="10" alt="logo" src={logoUrl} />
+      <Box marginBottom="10">
+        <a href="https://sequence.xyz/" target="_blank" rel="noopener">
+          <Image height="6" alt="logo" src={logoUrl} />
+        </a>
       </Box>
 
       <Box>
-        <Text color="text100" variant="large">
-          Demo Dapp ({network && network.length > 0 ? network : 'mainnet'})
+        <Text variant="normal" color="text100" fontWeight="bold">
+          Demo Dapp
         </Text>
       </Box>
 
-      <Box marginBottom="4">
-        <Text>Please open your browser dev inspector to view output of functions below</Text>
+      <Box marginTop="1" marginBottom="4">
+        <Text variant="normal" color="text80">
+          A dapp example on how to use the Sequence Wallet. This covers how to connect, sign messages and send transctions.
+        </Text>
       </Box>
 
+      <Card background="backgroundMuted" alignItems="center" gap="3">
+        <TransactionIcon />
+        <Text variant="normal" color="text80">
+          Please open your browser dev inspector to view output of functions below.
+        </Text>
+      </Card>
+
+      <Divider background="buttonGlass" />
+
+      <Box marginBottom="4">
+        <Text as="div" variant="small" color="text50">
+          Network
+        </Text>
+
+        <Box gap="1" marginTop="1" alignItems="center">
+          <Text as="div" variant="normal" color="text80" capitalize>
+            {network && network.length > 0 ? network : 'mainnet'}
+          </Text>
+        </Box>
+      </Box>
+
+      <Divider background="buttonGlass" />
+
+      <Box marginBottom="4">
+        <Text as="div" variant="small" color="text50">
+          Wallet URL
+        </Text>
+
+        <a href={walletAppURL} target="_blank" rel="noopener">
+          <Box gap="1" marginTop="1" alignItems="center">
+            <Text as="div" variant="normal" color="text80">
+              {walletAppURL}
+            </Text>
+            <ExternalLinkIcon />
+          </Box>
+        </a>
+      </Box>
+
+      <Divider background="buttonGlass" />
+
       <Group label="Connection">
-        <Button onClick={() => connect()}>Connect</Button>
-        <Button onClick={() => connect(true)}>Connect & Auth</Button>
-        <Button onClick={() => connect(true, true)}>Connect with Settings</Button>
-        <Button onClick={() => disconnect()}>Disconnect</Button>
-        <Button disabled={!isWalletConnected} onClick={() => openWallet()}>
-          Open Wallet
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => openWalletWithSettings()}>
-          Open Wallet with Settings
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => closeWallet()}>
-          Close Wallet
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => isConnected()}>
-          Is Connected?
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => isOpened()}>
-          Is Opened?
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => getDefaultChainID()}>
-          DefaultChain?
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => getAuthChainID()}>
-          AuthChain?
-        </Button>
+        <Button width="full" shape="square" onClick={() => connect()} label="Connect" />
+        <Button width="full" shape="square" onClick={() => connect(true)} label="Connect & Auth" />
+        <Button width="full" shape="square" onClick={() => connect(true, true)} label="Connect with Settings" />
+        <Button width="full" shape="square" onClick={() => disconnect()} label="Disconnect" />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => openWallet()} label="Open Wallet" />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => openWalletWithSettings()}
+          label="Open Wallet with Settings"
+        />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => closeWallet()} label="Close Wallet" />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => isConnected()} label="Is Connected?" />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => isOpened()} label="Is Opened?" />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => getDefaultChainID()}
+          label="DefaultChain?"
+        />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => getAuthChainID()} label="AuthChain?" />
       </Group>
 
       <Group label="State">
-        <Button disabled={!isWalletConnected} onClick={() => getChainID()}>
-          ChainID
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => getNetworks()}>
-          Networks
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => getAccounts()}>
-          Get Accounts
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => getBalance()}>
-          Get Balance
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => getWalletState()}>
-          Get Wallet State
-        </Button>
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => getChainID()} label="ChainID" />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => getNetworks()} label="Networks" />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => getAccounts()} label="Get Accounts" />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => getBalance()} label="Get Balance" />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => getWalletState()}
+          label="Get Wallet State"
+        />
       </Group>
 
       <Group label="Signing">
-        <Button disabled={!isWalletConnected} onClick={() => signMessage()}>
-          Sign Message
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => signTypedData()}>
-          Sign TypedData
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => signAuthMessage()}>
-          Sign Message on AuthChain
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => signETHAuth()}>
-          Sign ETHAuth
-        </Button>
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => signMessage()} label="Sign Message" />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => signTypedData()}
+          label="Sign TypedData"
+        />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => signAuthMessage()}
+          label="Sign Message on AuthChain"
+        />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => signETHAuth()} label="Sign ETHAuth" />
       </Group>
 
       <Group label="Simulation">
-        <Button disabled={!isWalletConnected} onClick={() => estimateUnwrapGas()}>
-          Estimate Unwrap Gas
-        </Button>
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => estimateUnwrapGas()}
+          label="Estimate Unwrap Gas"
+        />
       </Group>
 
       <Group label="Transactions">
-        <Button disabled={!isWalletConnected} onClick={() => sendETH()}>
-          Send on DefaultChain
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => sendETHSidechain()}>
-          Send on AuthChain
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => sendDAI()}>
-          Send DAI
-        </Button>
-        <Button disabled={!isWalletConnected} onClick={() => send1155Tokens()}>
-          Send ERC-1155 Tokens
-        </Button>
-        {/* <Button disabled={!isWalletConnected} onClick={() => sendBatchTransaction()}>Send Batch Txns</Button> */}
-        <Button disabled={!isWalletConnected} onClick={() => sendRinkebyUSDC()}>
-          Send on Rinkeby
-        </Button>
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => sendETH()}
+          label="Send on DefaultChain"
+        />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => sendETHSidechain()}
+          label="Send on AuthChain"
+        />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => sendDAI()} label="Send DAI" />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => send1155Tokens()}
+          label="Send ERC-1155 Tokens"
+        />
+        {/* <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => sendBatchTransaction()} label="Send Batch Txns"/> */}
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => sendRinkebyUSDC()}
+          label="Send on Rinkeby"
+        />
       </Group>
 
       <Group label="Various">
-        <Button css={{ height: '60px' }} disabled={!isWalletConnected} onClick={() => contractExample()}>
-          Contract Example (read token symbol and balance)
-        </Button>
-        <Button css={{ height: '60px' }} disabled={!isWalletConnected} onClick={() => fetchTokenBalances()}>
-          Fetch Token Balances + Metadata
-        </Button>
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => contractExample()}
+          label="Read Symbol and Balance"
+        />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => fetchTokenBalances()}
+          label="Fetch Token Balances"
+        />
       </Group>
 
       <Console message={consoleMsg} loading={consoleLoading} />
