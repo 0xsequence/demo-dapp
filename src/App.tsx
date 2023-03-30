@@ -19,8 +19,10 @@ import { OpenWalletIntent, Settings } from '@0xsequence/provider'
 configureLogger({ logLevel: 'DEBUG' })
 
 // Configure Sequence wallet
-const walletAppURL = import.meta.env.REACT_APP_WALLET_APP_URL || 'https://sequence.app'
+const walletAppURL = import.meta.env.VITE_WALLET_APP_URL || 'https://sequence.app'
 const network = 'polygon'
+
+alert(walletAppURL)
 sequence.initWallet(network, { walletAppURL })
 
 // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
@@ -895,7 +897,9 @@ And that has made all the difference.
       </Box>
 
       <Box>
-        <Text color="text100" variant="large">Demo Dapp ({network && network.length > 0 ? network : 'mainnet'})</Text>
+        <Text color="text100" variant="large">
+          Demo Dapp ({network && network.length > 0 ? network : 'mainnet'})
+        </Text>
       </Box>
 
       <Box marginBottom="4">
