@@ -70,7 +70,7 @@ const App = () => {
             // signInWithEmail: 'user@email.com',
             // Specify signInOptions to pick the available sign in options.
             // signInOptions: ['email', 'google', 'apple'],
-            theme: 'indigoDark',
+            theme: 'light',
             bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`,
             includedPaymentProviders: ['moonpay'],
             defaultFundingCurrency: 'matic',
@@ -129,7 +129,7 @@ const App = () => {
     const wallet = sequence.getWallet()
 
     const settings: Settings = {
-      theme: 'goldDark',
+      theme: 'light',
       includedPaymentProviders: ['moonpay', 'ramp', 'wyre'],
       defaultFundingCurrency: 'eth',
       defaultPurchaseAmount: 400,
