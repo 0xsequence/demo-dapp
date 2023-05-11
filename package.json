@@ -14,11 +14,11 @@
     "unlink-sequence": "../sequence.js/scripts/pnpm-link.sh unlink"
   },
   "dependencies": {
-    "0xsequence": "^0.43.12",
+    "0xsequence": "0.43.27",
     "@0xsequence/design-system": "^0.1.124",
     "@0xsequence/ethauth": "^0.8.1",
-    "@0xsequence/provider": "^0.43.7",
-    "@0xsequence/utils": "^0.43.7",
+    "@0xsequence/provider": "0.43.27",
+    "@0xsequence/utils": "0.43.27",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",

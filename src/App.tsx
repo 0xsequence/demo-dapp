@@ -81,6 +81,16 @@ const App = () => {
 
       console.warn('connectDetails', { connectDetails })
 
+      // Example of how to verify using ETHAuth via Sequence API
+      if (authorize) {
+        const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
+        const { isValid } = await api.isValidETHAuthProof({
+            chainId: 'polygon', walletAddress: connectDetails.session.accountAddress, ethAuthProofString: connectDetails.proof!.proofString
+        })
+        console.log('isValid?', isValid)
+      }
+
+      // Example of how to verify using ETHAuth directl on client-side
       if (authorize) {
         const ethAuth = new ETHAuth()
 
