@@ -46,6 +46,13 @@ const App = () => {
     // eslint-disable-next-line
   }, [isWalletConnected])
 
+  // Wallet events
+  wallet.on('disconnect', () => {
+    console.log('wallet disconnected')
+    disconnect() // optional method, but useful in this example
+  })
+
+  // Methods
   const connect = async (authorize: boolean = false, withSettings: boolean = false) => {
     if (isWalletConnected) {
       resetConsole()
