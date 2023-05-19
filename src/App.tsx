@@ -12,7 +12,7 @@ import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
 
 import { Console } from './components/Console'
-import { OpenWalletIntent, Settings } from '@0xsequence/provider'
+import { ConnectOptions, OpenWalletIntent, Settings } from '@0xsequence/provider'
 import { Group } from './components/Group'
 
 configureLogger({ logLevel: 'DEBUG' })
@@ -52,8 +52,14 @@ const App = () => {
     disconnect() // optional method, but useful in this example
   })
 
+  const defaultConnectOptions: ConnectOptions = {
+    app: 'Demo Dapp',
+    askForEmail: true
+    // keepWalletOpened: true,
+  }
+
   // Methods
-  const connect = async (authorize: boolean = false, withSettings: boolean = false) => {
+  const connect = async (connectOptions: ConnectOptions = {}) => {
     if (isWalletConnected) {
       resetConsole()
       addNewConsoleLine('Wallet already connected!')
@@ -61,44 +67,37 @@ const App = () => {
       return
     }
 
+    connectOptions = {
+      ...defaultConnectOptions,
+      ...connectOptions,
+      settings: {
+        ...defaultConnectOptions.settings,
+        ...connectOptions.settings
+      }
+    }
+
     try {
       resetConsole()
       addNewConsoleLine('Connecting')
       const wallet = sequence.getWallet()
 
-      const connectDetails = await wallet.connect({
-        app: 'Demo Dapp',
-        authorize,
-        askForEmail: true,
-        // keepWalletOpened: true,
-        ...(withSettings && {
-          settings: {
-            // Specify signInWithEmail with an email address to allow user automatically sign in with the email option.
-            // signInWithEmail: 'user@email.com',
-            // Specify signInOptions to pick the available sign in options.
-            // signInOptions: ['email', 'google', 'apple'],
-            theme: 'light',
-            bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`,
-            includedPaymentProviders: ['moonpay'],
-            defaultFundingCurrency: 'matic',
-            defaultPurchaseAmount: 111
-          }
-        })
-      })
+      const connectDetails = await wallet.connect(connectOptions)
 
       console.warn('connectDetails', { connectDetails })
 
       // Example of how to verify using ETHAuth via Sequence API
-      if (authorize) {
+      if (connectOptions.authorize) {
         const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
         const { isValid } = await api.isValidETHAuthProof({
-            chainId: 'polygon', walletAddress: connectDetails.session.accountAddress, ethAuthProofString: connectDetails.proof!.proofString
+          chainId: 'polygon',
+          walletAddress: connectDetails.session.accountAddress,
+          ethAuthProofString: connectDetails.proof!.proofString
         })
         console.log('isValid?', isValid)
       }
 
       // Example of how to verify using ETHAuth directl on client-side
-      if (authorize) {
+      if (connectOptions.authorize) {
         const ethAuth = new ETHAuth()
 
         if (connectDetails.proof) {
@@ -967,8 +966,42 @@ And that has made all the difference.
 
       <Group label="Connection">
         <Button width="full" shape="square" onClick={() => connect()} label="Connect" />
-        <Button width="full" shape="square" onClick={() => connect(true)} label="Connect & Auth" />
-        <Button width="full" shape="square" onClick={() => connect(true, true)} label="Connect with Settings" />
+        <Button width="full" shape="square" onClick={() => connect({ authorize: true })} label="Connect & Auth" />
+        <Button
+          width="full"
+          shape="square"
+          onClick={() =>
+            connect({
+              authorize: true,
+              settings: {
+                // Specify signInOptions to pick the available sign in options.
+                // signInOptions: ['email', 'google', 'apple'],
+                theme: 'dark',
+                bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`,
+                includedPaymentProviders: ['moonpay'],
+                defaultFundingCurrency: 'matic',
+                defaultPurchaseAmount: 111
+              }
+            })
+          }
+          label="Connect with Settings"
+        />
+        <Button
+          width="full"
+          shape="square"
+          onClick={() =>
+            connect({
+              authorize: true,
+              settings: {
+                // Specify signInWithEmail with an email address to allow user automatically sign in with the email option.
+                signInWithEmail: 'noreply@horizon.io',
+                theme: 'dark',
+                bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`
+              }
+            })
+          }
+          label="Connect with Email"
+        />
         <Button width="full" shape="square" onClick={() => disconnect()} label="Disconnect" />
         <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => openWallet()} label="Open Wallet" />
         <Button
