@@ -83,7 +83,7 @@ const App = () => {
 
       const connectDetails = await wallet.connect(connectOptions)
 
-      console.warn('connectDetails', { connectDetails })
+      console.warn('connectDetails', JSON.stringify(connectDetails, null, 2))
 
       // Example of how to verify using ETHAuth via Sequence API
       if (connectOptions.authorize) {
