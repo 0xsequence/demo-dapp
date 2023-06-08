@@ -2,31 +2,31 @@ name: build dapp
 
 on:
   push:
-   branches:
-    - master
+    branches:
+      - master
 
 jobs:
   build:
-   runs-on: ubuntu-latest
-   name: Build and Push
-   steps:
-    - name: git-checkout
-      uses: actions/checkout@v3
-    
-    - name: Setup PNPM
-      uses: pnpm/action-setup@v2
-      with:
-        version: 7
-        run_install: true
+    runs-on: ubuntu-latest
+    name: Build and Push
+    steps:
+      - name: git-checkout
+        uses: actions/checkout@v3
 
-    - name: Build
-      run: pnpm dist
-      
-    - name: Push
-      uses: s0/git-publish-subdir-action@develop
-      env:
-        REPO: self
-        BRANCH: build
-        FOLDER: dist
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        MESSAGE: "Build: ({sha}) {msg}"
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: true
+
+      - name: Build
+        run: pnpm dist
+
+      - name: Push
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: build
+          FOLDER: dist
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: 'Build: ({sha}) {msg}'
