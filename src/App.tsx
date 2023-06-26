@@ -884,10 +884,16 @@ And that has made all the difference.
     setConsoleLoading(true)
   }
 
-  const addNewConsoleLine = (message: string) => {
+  interface AddNewConsoleLineOptions {
+    logMessage?: boolean
+  }
+  const addNewConsoleLine = (message: string, options?: AddNewConsoleLineOptions) => {
     setConsoleMsg(() => {
       return message
     })
+    if (options.logMessage) {
+      console.log(message)
+    }
   }
 
   const consoleWelcomeMessage = () => {
@@ -908,14 +914,16 @@ And that has made all the difference.
   const switchToChainId = async (targetChainId: number) => {
     try {
       resetConsole()
+      const chainIdBefore = await wallet.getChainId()
+      addNewConsoleLine(`Chain id before switching networks: ${chainIdBefore}`, { logMessage: true })
+
+      addNewConsoleLine(`Attempting to connect to chain #${targetChainId}`, { logMessage: true })
       const provider = wallet.getProvider()!
 
       await provider.send('wallet_switchEthereumChain', [{ chainId: targetChainId }]);
 
-      // verify the new chainId
-      const chainId = await wallet.getChainId()
-      console.log('chainId after switching networks:', chainId)
-      addNewConsoleLine(`Chain id after switching networks: ${chainId}`)
+      const chainIdAfter = await wallet.getChainId()
+      addNewConsoleLine(`Chain id after switching networks: ${chainIdAfter}`, { logMessage: true })
 
       setConsoleLoading(false)
     } catch(e) {
