@@ -905,6 +905,18 @@ And that has made all the difference.
     setConsoleMsg('An error occurred')
   }
 
+  const switchTo137 = async () => {
+    const provider = wallet.getProvider()!
+
+    await provider.send('wallet_switchEthereumChain', [{ chainId: 137 }]);
+  }
+
+  const switchTo1 = async () => {
+    const provider = wallet.getProvider()!
+
+    await provider.send('wallet_switchEthereumChain', [{ chainId: 1 }]);
+  }
+
   return (
     <Box marginY="0" marginX="auto" paddingX="6" style={{ maxWidth: '720px', marginTop: '80px', marginBottom: '80px' }}>
       <Box marginBottom="10">
@@ -1021,6 +1033,20 @@ And that has made all the difference.
           disabled={!isWalletConnected}
           onClick={() => getDefaultChainID()}
           label="DefaultChain?"
+        />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => switchTo137()}
+          label="switch to chain 137"
+        />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => switchTo1()}
+          label="switch to chain 1"
         />
         <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => getAuthChainID()} label="AuthChain?" />
       </Group>
