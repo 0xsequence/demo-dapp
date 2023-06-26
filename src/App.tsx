@@ -904,16 +904,23 @@ And that has made all the difference.
     setConsoleMsg('An error occurred')
   }
 
-  const switchTo137 = async () => {
-    const provider = wallet.getProvider()!
+  const switchToChainId = async (targetChainId: number) => {
+    try {
+      resetConsole()
+      const provider = wallet.getProvider()!
 
-    await provider.send('wallet_switchEthereumChain', [{ chainId: 137 }]);
-  }
+      await provider.send('wallet_switchEthereumChain', [{ chainId: targetChainId }]);
 
-  const switchTo1 = async () => {
-    const provider = wallet.getProvider()!
+      // verify the new chainId
+      const chainId = await wallet.getChainId()
+      console.log('chainId after switching networks:', chainId)
+      addNewConsoleLine(`Chain id after switching networks: ${chainId}`)
 
-    await provider.send('wallet_switchEthereumChain', [{ chainId: 1 }]);
+      setConsoleLoading(false)
+    } catch(e) {
+      console.error(e)
+      consoleErrorMessage()
+    }
   }
 
   return (
@@ -1037,15 +1044,15 @@ And that has made all the difference.
           width="full"
           shape="square"
           disabled={!isWalletConnected}
-          onClick={() => switchTo137()}
-          label="switch to chain 137"
+          onClick={() => switchToChainId(137)}
+          label="Switch to chain id 137"
         />
         <Button
           width="full"
           shape="square"
           disabled={!isWalletConnected}
-          onClick={() => switchTo1()}
-          label="switch to chain 1"
+          onClick={() => switchToChainId(1)}
+          label="Switch to chain id 1"
         />
         <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => getAuthChainID()} label="AuthChain?" />
       </Group>
