@@ -883,10 +883,16 @@ And that has made all the difference.
     setConsoleLoading(true)
   }
 
-  const addNewConsoleLine = (message: string) => {
+  interface AddNewConsoleLineOptions {
+    logMessage?: boolean
+  }
+  const addNewConsoleLine = (message: string, options?: AddNewConsoleLineOptions) => {
     setConsoleMsg(() => {
       return message
     })
+    if (options.logMessage) {
+      console.log(message)
+    }
   }
 
   const consoleWelcomeMessage = () => {
@@ -902,6 +908,27 @@ And that has made all the difference.
   const consoleErrorMessage = () => {
     setConsoleLoading(false)
     setConsoleMsg('An error occurred')
+  }
+
+  const switchToChainId = async (targetChainId: number) => {
+    try {
+      resetConsole()
+      const chainIdBefore = await wallet.getChainId()
+      addNewConsoleLine(`Chain id before switching networks: ${chainIdBefore}`, { logMessage: true })
+
+      addNewConsoleLine(`Attempting to connect to chain #${targetChainId}`, { logMessage: true })
+      const provider = wallet.getProvider()!
+
+      await provider.send('wallet_switchEthereumChain', [{ chainId: targetChainId }]);
+
+      const chainIdAfter = await wallet.getChainId()
+      addNewConsoleLine(`Chain id after switching networks: ${chainIdAfter}`, { logMessage: true })
+
+      setConsoleLoading(false)
+    } catch(e) {
+      console.error(e)
+      consoleErrorMessage()
+    }
   }
 
   return (
@@ -1020,6 +1047,20 @@ And that has made all the difference.
           disabled={!isWalletConnected}
           onClick={() => getDefaultChainID()}
           label="DefaultChain?"
+        />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => switchToChainId(137)}
+          label="Switch to chain id 137"
+        />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => switchToChainId(1)}
+          label="Switch to chain id 1"
         />
         <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => getAuthChainID()} label="AuthChain?" />
       </Group>
