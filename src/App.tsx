@@ -914,8 +914,6 @@ And that has made all the difference.
   const switchToChainId = async (targetChainId: number) => {
     try {
       resetConsole()
-      const chainIdBefore = await wallet.getChainId()
-      addNewConsoleLine(`Chain id before switching networks: ${chainIdBefore}`, { logMessage: true })
 
       addNewConsoleLine(`Attempting to connect to chain #${targetChainId}`, { logMessage: true })
       const provider = wallet.getProvider()!
