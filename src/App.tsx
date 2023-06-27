@@ -777,10 +777,9 @@ And that has made all the difference.
     try {
       const wallet = sequence.getWallet()
 
-      // const signer = wallet.getSigner(ChainId.POLYGON)
       // Select network that isn't the DefaultChain..
       const networks = await wallet.getNetworks()
-      const n = networks.find(n => n.isAuthChain)
+      const n = networks.find(n => n.chainId === ChainId.POLYGON)
       sendETH(wallet.getSigner(n))
     } catch (e) {
       console.error(e)
@@ -918,13 +917,13 @@ And that has made all the difference.
       addNewConsoleLine(`Attempting to connect to chain #${targetChainId}`, { logMessage: true })
       const provider = wallet.getProvider()!
 
-      await provider.send('wallet_switchEthereumChain', [{ chainId: targetChainId }]);
+      await provider.send('wallet_switchEthereumChain', [{ chainId: targetChainId }])
 
       const chainIdAfter = await wallet.getChainId()
       addNewConsoleLine(`Chain id after switching networks: ${chainIdAfter}`, { logMessage: true })
 
       setConsoleLoading(false)
-    } catch(e) {
+    } catch (e) {
       console.error(e)
       consoleErrorMessage()
     }
