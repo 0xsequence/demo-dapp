@@ -1,4 +1,15 @@
-import { Box, Image, Text, Button, ExternalLinkIcon, Divider, Card, TransactionIcon } from '@0xsequence/design-system'
+import {
+  Box,
+  Image,
+  Text,
+  Button,
+  ExternalLinkIcon,
+  Divider,
+  Card,
+  TransactionIcon,
+  Select,
+  TokenImage
+} from '@0xsequence/design-system'
 import React, { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { sequence } from '0xsequence'
@@ -14,15 +25,19 @@ import skyweaverBannerUrl from './images/skyweaver-banner.png'
 import { Console } from './components/Console'
 import { ConnectOptions, OpenWalletIntent, Settings } from '@0xsequence/provider'
 import { Group } from './components/Group'
-import { ChainId } from '@0xsequence/network'
+import { ChainId, NetworkConfig } from '@0xsequence/network'
+import { networkImages } from './images/networks'
 
 configureLogger({ logLevel: 'DEBUG' })
 
 // Configure Sequence wallet
 const walletAppURL = import.meta.env.VITE_WALLET_APP_URL || 'https://sequence.app'
-const network = 'polygon'
+const defaultChainId = ChainId.POLYGON
 
-sequence.initWallet(network, { walletAppURL })
+sequence.initWallet(defaultChainId, { walletAppURL })
+
+// Get sequence wallet instance
+const wallet = sequence.getWallet()
 
 // NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
 // As well, make sure to comment out any other `const wallet = ..` statements.
@@ -34,9 +49,23 @@ const App = () => {
   const [consoleMsg, setConsoleMsg] = useState<null | string>(null)
   const [consoleLoading, setConsoleLoading] = useState<boolean>(false)
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
+  const [chainId, setChainId] = useState<ChainId>(ChainId.POLYGON)
+  const [networks, setNetworks] = useState<NetworkConfig[]>([])
 
-  // Get sequence wallet instance
-  const wallet = sequence.getWallet()
+  useEffect(() => {
+    ;(async () => {
+      const networks = await wallet.getNetworks()
+      setNetworks(networks)
+    })()
+  }, [wallet])
+
+  useEffect(() => {
+    ;(async () => {
+      const chainId = await wallet.getChainId()
+
+      setChainId(chainId)
+    })()
+  }, [wallet])
 
   useEffect(() => {
     setIsWalletConnected(wallet.isConnected())
@@ -47,16 +76,42 @@ const App = () => {
     // eslint-disable-next-line
   }, [isWalletConnected])
 
-  // Wallet events
-  wallet.on('disconnect', () => {
-    console.log('wallet disconnected')
-    disconnect() // optional method, but useful in this example
-  })
+  useEffect(() => {
+    // Wallet events
+    wallet.on('disconnect', () => {
+      console.log('wallet disconnected')
+      disconnect() // optional method, but useful in this example
+    })
+
+    wallet.on('chainChanged', (chainId: string) => {
+      console.log('chainChanged', chainId)
+
+      setChainId(Number(chainId))
+    })
+  }, [wallet])
+
+  // useEffect(() => {
+  //   const provider = wallet.getProvider()
+
+  //   provider.send('wallet_switchEthereumChain', [{ chainId: '0x89' }]).catch((error: any) => {
+  //     console.log(error)
+  //   })
+  // }, [chainId])
 
   const defaultConnectOptions: ConnectOptions = {
     app: 'Demo Dapp',
     askForEmail: true
     // keepWalletOpened: true,
+  }
+
+  const handleChainChange = (chainId: ChainId) => {
+    const provider = wallet.getProvider()
+
+    provider.send('wallet_switchEthereumChain', [{ chainId: '0x89' }]).catch((error: any) => {
+      console.log(error)
+    })
+
+    setChainId(chainId)
   }
 
   // Methods
@@ -959,21 +1014,7 @@ And that has made all the difference.
       <Divider background="buttonGlass" />
 
       <Box marginBottom="4">
-        <Text as="div" variant="small" color="text50">
-          Network
-        </Text>
-
-        <Box gap="1" marginTop="1" alignItems="center">
-          <Text as="div" variant="normal" color="text80" capitalize>
-            {network && network.length > 0 ? network : 'mainnet'}
-          </Text>
-        </Box>
-      </Box>
-
-      <Divider background="buttonGlass" />
-
-      <Box marginBottom="4">
-        <Text as="div" variant="small" color="text50">
+        <Text as="div" variant="small" color="text100">
           Wallet URL
         </Text>
 
@@ -988,6 +1029,27 @@ And that has made all the difference.
       </Box>
 
       <Divider background="buttonGlass" />
+
+      <Box marginBottom="4">
+        <Select
+          name="chainId"
+          label={'Network'}
+          labelLocation="top"
+          onValueChange={value => handleChainChange(Number(value))}
+          defaultValue={String(defaultChainId)}
+          options={[
+            ...Object.values(networks).map(network => ({
+              label: (
+                <Box alignItems="center" gap="2">
+                  <TokenImage src={networkImages[network.chainId]} size="sm" />
+                  <Text>{network.title!}</Text>
+                </Box>
+              ),
+              value: String(network.chainId)
+            }))
+          ]}
+        />
+      </Box>
 
       <Group label="Connection">
         <Button width="full" shape="square" onClick={() => connect()} label="Connect" />
