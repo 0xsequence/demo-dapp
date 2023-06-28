@@ -230,20 +230,20 @@ const App = () => {
   const getChainID = async () => {
     try {
       resetConsole()
-      const chainId = await wallet.getChainId()
-      console.log('chainId:', chainId)
-      addNewConsoleLine(`chainId: ${chainId}`)
+      const topChainId = await wallet.getChainId()
+      console.log('top chainId:', topChainId)
+      addNewConsoleLine(`top chainId: ${topChainId}`)
 
-      const provider = wallet.getProvider()
+      const provider = wallet.getProvider(chainId)
       const providerChainId = await provider!.getChainId()
       console.log('provider.getChainId()', providerChainId)
       appendConsoleLine(`provider.getChainId(): ${providerChainId}`)
 
-      // const signer = wallet.getSigner()
-      // const signerChainId = await signer.getChainId()
-      // console.log('signer.getChainId()', signerChainId)
-      // appendConsoleLine(`provider.getChainId(): ${signerChainId}`)
-      // setConsoleLoading(false)
+      const signer = wallet.getSigner(chainId)
+      const signerChainId = await signer.getChainId()
+      console.log('signer.getChainId()', signerChainId)
+      appendConsoleLine(`provider.getChainId(): ${signerChainId}`)
+      setConsoleLoading(false)
     } catch (e) {
       console.error(e)
       consoleErrorMessage()
