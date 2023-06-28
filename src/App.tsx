@@ -32,7 +32,7 @@ configureLogger({ logLevel: 'DEBUG' })
 
 // Configure Sequence wallet
 const walletAppURL = import.meta.env.VITE_WALLET_APP_URL || 'https://sequence.app'
-const defaultChainId = ChainId.POLYGON
+const defaultChainId = ChainId.AVALANCHE
 sequence.initWallet(defaultChainId, { walletAppURL })
 
 // Get sequence wallet instance
@@ -128,13 +128,14 @@ const App = () => {
 
       // Example of how to verify using ETHAuth via Sequence API
       if (connectOptions.authorize) {
-        const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
-        const { isValid } = await api.isValidETHAuthProof({
-          chainId: 'polygon',
-          walletAddress: connectDetails.session.accountAddress,
-          ethAuthProofString: connectDetails.proof!.proofString
-        })
-        console.log('isValid?', isValid)
+        // TODO: need to add support on sequence api to verify signed payload from counterfactual wallet config
+        // const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
+        // const { isValid } = await api.isValidETHAuthProof({
+        //   chainId: 'polygon',
+        //   walletAddress: connectDetails.session.accountAddress,
+        //   ethAuthProofString: connectDetails.proof!.proofString
+        // })
+        // console.log('isValid?', isValid)
       }
 
       // Example of how to verify using ETHAuth directl on client-side
@@ -146,11 +147,14 @@ const App = () => {
 
           console.warn({ decodedProof })
 
+          console.log('chainId:', ethers.BigNumber.from(connectDetails.chainId).toNumber())
+
+          // TODO: need to update wallet.utils function to verify from counterfactual wallet config
           const isValid = await wallet.utils.isValidTypedDataSignature(
             await wallet.getAddress(),
             connectDetails.proof.typedData,
             decodedProof.signature,
-            ChainId.POLYGON
+            ethers.BigNumber.from(connectDetails.chainId).toNumber()
           )
           console.log('isValid?', isValid)
           appendConsoleLine(`isValid?: ${isValid}`)
@@ -163,6 +167,7 @@ const App = () => {
 
       setConsoleLoading(false)
       if (connectDetails.connected) {
+        setChainId(await wallet.getChainId())
         appendConsoleLine('Wallet connected!')
         setIsWalletConnected(true)
       } else {
