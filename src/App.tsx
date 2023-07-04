@@ -128,14 +128,13 @@ const App = () => {
 
       // Example of how to verify using ETHAuth via Sequence API
       if (connectOptions.authorize) {
-        // TODO: need to add support on sequence api to verify signed payload from counterfactual wallet config
-        // const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
-        // const { isValid } = await api.isValidETHAuthProof({
-        //   chainId: 'polygon',
-        //   walletAddress: connectDetails.session.accountAddress,
-        //   ethAuthProofString: connectDetails.proof!.proofString
-        // })
-        // console.log('isValid?', isValid)
+        const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
+        const { isValid } = await api.isValidETHAuthProof({
+          chainId: defaultChainId.toString(),
+          walletAddress: connectDetails.session.accountAddress,
+          ethAuthProofString: connectDetails.proof!.proofString
+        })
+        console.log('isValid?', isValid)
       }
 
       // Example of how to verify using ETHAuth directl on client-side
