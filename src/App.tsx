@@ -890,7 +890,7 @@ And that has made all the difference.
     setConsoleMsg(() => {
       return message
     })
-    if (options.logMessage) {
+    if (options && options.logMessage) {
       console.log(message)
     }
   }
