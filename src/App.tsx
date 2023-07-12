@@ -126,10 +126,10 @@ const App = () => {
           ethAuthProofString: connectDetails.proof!.proofString
         })
 
-        appendConsoleLine(`isValid (API)? ${isValid}`)
+        appendConsoleLine(`isValid (API)?: ${isValid}`)
       }
 
-      // Example of how to verify using ETHAuth directl on client-side
+      // Example of how to verify using ETHAuth directl on the client
       if (connectOptions.authorize) {
         const ethAuth = new ETHAuth()
 
@@ -143,7 +143,7 @@ const App = () => {
             ethers.BigNumber.from(connectDetails.chainId).toNumber()
           )
 
-          appendConsoleLine(`isValid (client-side)?: ${isValid}`)
+          appendConsoleLine(`isValid (client)?: ${isValid}`)
         }
       }
 
@@ -232,7 +232,7 @@ const App = () => {
 
       const signer = wallet.getSigner(chainId)
       const signerChainId = await signer.getChainId()
-      appendConsoleLine(`provider.getChainId(): ${signerChainId}`)
+      appendConsoleLine(`signer.getChainId(): ${signerChainId}`)
 
       setConsoleLoading(false)
     } catch (e) {
