@@ -10,11 +10,12 @@ import {
   Select,
   TokenImage
 } from '@0xsequence/design-system'
+
 import React, { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { sequence } from '0xsequence'
 
-import { ETHAuth, Proof } from '@0xsequence/ethauth'
+import { ETHAuth } from '@0xsequence/ethauth'
 import { ERC_20_ABI } from './constants/abi'
 
 import { configureLogger } from '@0xsequence/utils'
@@ -32,24 +33,26 @@ configureLogger({ logLevel: 'DEBUG' })
 
 // Configure Sequence wallet
 const walletAppURL = import.meta.env.VITE_WALLET_APP_URL || 'https://sequence.app'
-const defaultChainId = ChainId.AVALANCHE
+
+// To use any other network as default
+// call `initWallet` with the desired chainId
+const defaultChainId = ChainId.POLYGON
 sequence.initWallet(defaultChainId, { walletAppURL })
 
 // Get sequence wallet instance
 const wallet = sequence.getWallet()
-
-// NOTE: to use mumbai, first go to https://sequence.app and click on "Enable Testnet".
-// As well, make sure to comment out any other `const wallet = ..` statements.
-// const network = 'mumbai'
-// sequence.initWallet(network, { networkRpcUrl: 'https://matic-mumbai.chainstacklabs.com' })
 
 // App component
 const App = () => {
   const [consoleMsg, setConsoleMsg] = useState<null | string>(null)
   const [consoleLoading, setConsoleLoading] = useState<boolean>(false)
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
-  const [chainId, setChainId] = useState<ChainId | undefined>()
   const [networks, setNetworks] = useState<NetworkConfig[]>([])
+
+  // Selected network is tracked in the dapp state
+  // Sequence wallet allows talking to any network, any time
+  // there is no need to switch networks
+  const [chainId, setChainId] = useState<ChainId | undefined>()
 
   useEffect(() => {
     ;(async () => {
@@ -61,7 +64,6 @@ const App = () => {
   useEffect(() => {
     ;(async () => {
       const chainId = await wallet.getChainId()
-
       setChainId(chainId)
     })()
   }, [wallet])
@@ -81,12 +83,6 @@ const App = () => {
       console.log('wallet disconnected')
       disconnect() // optional method, but useful in this example
     })
-
-    wallet.on('chainChanged', (chainId: string) => {
-      console.log('chainChanged', chainId)
-
-      setChainId(Number(chainId))
-    })
   }, [wallet])
 
   const defaultConnectOptions: ConnectOptions = {
@@ -95,15 +91,11 @@ const App = () => {
     // keepWalletOpened: true,
   }
 
-  const handleChainChange = (chainId: ChainId) => {
-    setChainId(chainId)
-  }
-
   // Methods
   const connect = async (connectOptions: ConnectOptions = {}) => {
     if (isWalletConnected) {
       resetConsole()
-      addNewConsoleLine('Wallet already connected!')
+      appendConsoleLine('Wallet already connected!')
       setConsoleLoading(false)
       return
     }
@@ -119,22 +111,22 @@ const App = () => {
 
     try {
       resetConsole()
-      addNewConsoleLine('Connecting')
+      appendConsoleLine('Connecting')
       const wallet = sequence.getWallet()
 
       const connectDetails = await wallet.connect(connectOptions)
 
-      console.warn('connectDetails', JSON.stringify(connectDetails, null, 2))
-
       // Example of how to verify using ETHAuth via Sequence API
       if (connectOptions.authorize) {
         const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
+
         const { isValid } = await api.isValidETHAuthProof({
           chainId: defaultChainId.toString(),
           walletAddress: connectDetails.session.accountAddress,
           ethAuthProofString: connectDetails.proof!.proofString
         })
-        console.log('isValid?', isValid)
+
+        appendConsoleLine(`isValid (API)? ${isValid}`)
       }
 
       // Example of how to verify using ETHAuth directl on client-side
@@ -144,20 +136,14 @@ const App = () => {
         if (connectDetails.proof) {
           const decodedProof = await ethAuth.decodeProof(connectDetails.proof.proofString, true)
 
-          console.warn({ decodedProof })
-
-          console.log('chainId:', ethers.BigNumber.from(connectDetails.chainId).toNumber())
-
-          // TODO: need to update wallet.utils function to verify from counterfactual wallet config
           const isValid = await wallet.utils.isValidTypedDataSignature(
             await wallet.getAddress(),
             connectDetails.proof.typedData,
             decodedProof.signature,
             ethers.BigNumber.from(connectDetails.chainId).toNumber()
           )
-          console.log('isValid?', isValid)
-          appendConsoleLine(`isValid?: ${isValid}`)
-          if (!isValid) throw new Error('sig invalid')
+
+          appendConsoleLine(`isValid (client-side)?: ${isValid}`)
         }
       }
 
@@ -200,12 +186,14 @@ const App = () => {
       defaultPurchaseAmount: 400,
       lockFundingCurrencyToDefault: false
     }
+
     const intent: OpenWalletIntent = {
       type: 'openWithOptions',
       options: {
         settings
       }
     }
+
     const path = 'wallet/add-funds'
     wallet.openWallet(path, intent)
   }
@@ -218,35 +206,34 @@ const App = () => {
   const isConnected = async () => {
     resetConsole()
     const wallet = sequence.getWallet()
-    console.log('isConnected?', wallet.isConnected())
-    addNewConsoleLine(`isConnected?: ${wallet.isConnected()}`)
+    appendConsoleLine(`isConnected?: ${wallet.isConnected()}`)
     setConsoleLoading(false)
   }
 
   const isOpened = async () => {
     resetConsole()
     const wallet = sequence.getWallet()
-    console.log('isOpened?', wallet.isOpened())
-    addNewConsoleLine(`isOpened?: ${wallet.isOpened()}`)
+    appendConsoleLine(`isOpened?: ${wallet.isOpened()}`)
     setConsoleLoading(false)
   }
 
   const getChainID = async () => {
     try {
       resetConsole()
+
+      appendConsoleLine(`selected chainId: ${chainId}`)
+      
       const topChainId = await wallet.getChainId()
-      console.log('top chainId:', topChainId)
-      addNewConsoleLine(`top chainId: ${topChainId}`)
+      appendConsoleLine(`top chainId: ${topChainId}`)
 
       const provider = wallet.getProvider(chainId)
       const providerChainId = await provider!.getChainId()
-      console.log('provider.getChainId()', providerChainId)
       appendConsoleLine(`provider.getChainId(): ${providerChainId}`)
 
       const signer = wallet.getSigner(chainId)
       const signerChainId = await signer.getChainId()
-      console.log('signer.getChainId()', signerChainId)
       appendConsoleLine(`provider.getChainId(): ${signerChainId}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -257,15 +244,15 @@ const App = () => {
   const getAccounts = async () => {
     try {
       resetConsole()
+
       const wallet = sequence.getWallet()
       const address = await wallet.getAddress()
-      console.log(`getAddress(): ${address}`)
-      addNewConsoleLine(`getAddress(): ${address}`)
+      appendConsoleLine(`getAddress(): ${address}`)
 
       const provider = wallet.getProvider(chainId)
       const accountList = await provider!.listAccounts()
-      console.log('accounts:', accountList)
       appendConsoleLine(`accounts: ${JSON.stringify(accountList)}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -276,18 +263,18 @@ const App = () => {
   const getBalance = async () => {
     try {
       resetConsole()
+
       const wallet = sequence.getWallet()
 
       const provider = wallet.getProvider(chainId)
       const account = await wallet.getAddress()
       const balanceChk1 = await provider!.getBalance(account)
-      console.log('balance check 1', balanceChk1.toString())
-      addNewConsoleLine(`balance check 1: ${balanceChk1.toString()}`)
+      appendConsoleLine(`balance check 1: ${balanceChk1.toString()}`)
 
       const signer = wallet.getSigner(chainId)
       const balanceChk2 = await signer.getBalance()
-      console.log('balance check 2', balanceChk2.toString())
       appendConsoleLine(`balance check 2: ${balanceChk2.toString()}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -298,9 +285,10 @@ const App = () => {
   const getWalletState = async () => {
     try {
       resetConsole()
+
       const walletState = await wallet.getSigner(chainId).getWalletState()
-      console.log('wallet state:', walletState)
-      addNewConsoleLine(`wallet state: ${JSON.stringify(walletState)}`)
+      appendConsoleLine(`wallet state: ${JSON.stringify(walletState)}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -311,11 +299,11 @@ const App = () => {
   const getNetworks = async () => {
     try {
       resetConsole()
+
       const wallet = sequence.getWallet()
       const networks = await wallet.getNetworks()
 
-      console.log('networks:', networks)
-      addNewConsoleLine(`networks: ${JSON.stringify(networks, null, 2)}`)
+      appendConsoleLine(`networks: ${JSON.stringify(networks, null, 2)}`)
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -326,10 +314,10 @@ const App = () => {
   const signMessage = async () => {
     try {
       resetConsole()
+  
       const wallet = sequence.getWallet()
 
-      console.log('signing message...')
-      addNewConsoleLine('signing message...')
+      appendConsoleLine('signing message...')
       const signer = wallet.getSigner(chainId)
 
       const message = `1915 Robert Frost
@@ -363,18 +351,7 @@ And that has made all the difference.
 
       // sign
       const sig = await signer.signMessage(message)
-      console.log('signature:', sig)
       appendConsoleLine(`signature: ${sig}`)
-
-      // validate
-      const isValidHex = await wallet.utils.isValidMessageSignature(
-        await wallet.getAddress(),
-        ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message)),
-        sig,
-        await signer.getChainId()
-      )
-      console.log('isValidHex?', isValidHex)
-      appendConsoleLine(`isValidHex?: ${isValidHex}`)
 
       const isValid = await wallet.utils.isValidMessageSignature(
         await wallet.getAddress(),
@@ -382,22 +359,8 @@ And that has made all the difference.
         sig,
         await signer.getChainId()
       )
-      console.log('isValid?', isValid)
       appendConsoleLine(`isValid?: ${isValid}`)
       if (!isValid) throw new Error('sig invalid')
-
-      // recover
-      // const walletConfig = await wallet.utils.recoverWalletConfigFromMessage(
-      //   await wallet.getAddress(),
-      //   message,
-      //   sig,
-      //   await signer.getChainId(),
-      //   sequenceContext
-      // )
-      // console.log('recovered walletConfig:', walletConfig)
-      // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
-      // if (!match) throw new Error('recovery address does not match')
-      // console.log('address match?', match)
 
       setConsoleLoading(false)
     } catch (e) {
@@ -411,36 +374,10 @@ And that has made all the difference.
       resetConsole()
       const wallet = sequence.getWallet()
 
-      console.log('signing typedData...')
-      addNewConsoleLine('signing typedData...')
-
-      // const typedData: sequence.utils.TypedData = {
-      //   domain: {
-      //     name: 'Ether Mail',
-      //     version: '1',
-      //     chainId: await wallet.getChainId(),
-      //     verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
-      //   },
-      //   types: {
-      //     Person: [
-      //       { name: 'name', type: 'string' },
-      //       { name: 'wallet', type: 'address' }
-      //     ]
-      //   },
-      //   message: {
-      //     name: 'Bob',
-      //     wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB'
-      //   }
-      // }
+      appendConsoleLine('signing typedData...')
 
       const typedData: sequence.utils.TypedData = {
         types: {
-          // EIP712Domain: [
-          //   { name: 'name', type: 'string' },
-          //   { name: 'version', type: 'string' },
-          //   { name: 'chainId', type: 'uint256' },
-          //   { name: 'verifyingContract', type: 'address' }
-          // ],
           Person: [
             { name: 'name', type: 'string' },
             { name: 'wallet', type: 'address' }
@@ -481,7 +418,6 @@ And that has made all the difference.
       const signer = wallet.getSigner(chainId)
 
       const sig = await signer.signTypedData(typedData.domain, typedData.types, typedData.message)
-      console.log('signature:', sig)
       appendConsoleLine(`signature: ${sig}`)
 
       // validate
@@ -491,23 +427,8 @@ And that has made all the difference.
         sig,
         await signer.getChainId()
       )
-      console.log('isValid?', isValid)
       appendConsoleLine(`isValid?: ${isValid}`)
 
-      if (!isValid) throw new Error('sig invalid')
-
-      // recover
-      // const walletConfig = await wallet.utils.recoverWalletConfigFromTypedData(
-      //   await wallet.getAddress(),
-      //   typedData,
-      //   sig,
-      //   await signer.getChainId()
-      // )
-      // console.log('recovered walletConfig:', walletConfig)
-
-      // const match = walletConfig.address.toLowerCase() === (await wallet.getAddress()).toLowerCase()
-      // if (!match) throw new Error('recovery address does not match')
-      // console.log('address match?', match)
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -518,6 +439,7 @@ And that has made all the difference.
   const estimateUnwrapGas = async () => {
     try {
       resetConsole()
+
       const wallet = sequence.getWallet()
 
       const wmaticContractAddress = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270'
@@ -531,8 +453,8 @@ And that has made all the difference.
       const provider = wallet.getProvider(chainId)!
       const estimate = await provider.estimateGas(tx)
 
-      console.log('estimated gas needed for wmatic withdrawal:', estimate.toString())
-      addNewConsoleLine(`estimated gas needed for wmatic withdrawal : ${estimate.toString()}`)
+      appendConsoleLine(`estimated gas needed for wmatic withdrawal : ${estimate.toString()}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -545,20 +467,17 @@ And that has made all the difference.
       resetConsole()
       const wallet = sequence.getWallet()
 
-      signer = signer || wallet.getSigner(chainId) // select DefaultChain signer by default
+      signer = signer || wallet.getSigner(chainId)
 
-      console.log(`Transfer txn on ${signer.getChainId()} chainId`)
-      addNewConsoleLine(`Transfer txn on ${signer.getChainId()} chainId`)
+      appendConsoleLine(`Transfer txn on ${signer.getChainId()} chainId`)
 
       // NOTE: on mainnet, the balance will be of ETH value
       // and on matic, the balance will be of MATIC value
-      // const balance = await signer.getBalance()
-      // if (balance.eq(ethers.constants.Zero)) {
-      //   const address = await signer.getAddress()
-      //   throw new Error(`wallet ${address} has 0 balance, so cannot transfer anything. Deposit and try again.`)
-      // }
 
-      const toAddress = ethers.Wallet.createRandom().address
+      // Sending the funds to the wallet itself
+      // so we don't lose any funds ;-)
+      // (of course, you can send anywhere)
+      const toAddress = await signer.getAddress()
 
       const tx1: sequence.transactions.Transaction = {
         delegateCall: false,
@@ -581,17 +500,14 @@ And that has made all the difference.
       const provider = signer.provider
 
       const balance1 = await provider.getBalance(toAddress)
-      console.log(`balance of ${toAddress}, before:`, balance1)
       appendConsoleLine(`balance of ${toAddress}, before: ${balance1}`)
 
       const txnResp = await signer.sendTransactionBatch([tx1, tx2])
-      // await txnResp.wait() // optional as sendTransactionBatch already waits for the receipt
-      console.log('txnResponse:', txnResp)
       appendConsoleLine(`txnResponse: ${JSON.stringify(txnResp)}`)
 
       const balance2 = await provider.getBalance(toAddress)
-      console.log(`balance of ${toAddress}, after:`, balance2)
       appendConsoleLine(`balance of ${toAddress}, after: ${balance2}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -602,13 +518,16 @@ And that has made all the difference.
   const sendGoerliUSDC = async (signer?: sequence.provider.Web3Signer) => {
     try {
       resetConsole()
+
       const wallet = sequence.getWallet()
 
       signer = signer || wallet.getSigner(chainId) // select DefaultChain signer by default
 
       const toAddress = ethers.Wallet.createRandom().address
       const amount = ethers.utils.parseUnits('1', 1)
-      const usdcAddress = '0x07865c6e87b9f70255377e024ace6630c1eaa37f' // (USDC address on Goerli)
+
+      // (USDC address on Goerli)
+      const usdcAddress = '0x07865c6e87b9f70255377e024ace6630c1eaa37f'
 
       const tx: sequence.transactions.Transaction = {
         delegateCall: false,
@@ -620,9 +539,8 @@ And that has made all the difference.
       }
 
       const txnResp = await signer.sendTransactionBatch([tx], ChainId.GOERLI)
+      appendConsoleLine(`txnResponse: ${JSON.stringify(txnResp)}`)
 
-      console.log('txnResponse:', txnResp)
-      addNewConsoleLine(`txnResponse: ${JSON.stringify(txnResp)}`)
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -633,12 +551,13 @@ And that has made all the difference.
   const sendDAI = async (signer?: sequence.provider.Web3Signer) => {
     try {
       resetConsole()
+
       const wallet = sequence.getWallet()
 
       signer = signer || wallet.getSigner(chainId) // select DefaultChain signer by default
 
       const toAddress = ethers.Wallet.createRandom().address
-      const amount = ethers.utils.parseUnits('5', 18)
+      const amount = ethers.utils.parseUnits('0.05', 18)
       const daiContractAddress = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063' // (DAI address on Polygon)
 
       const tx: sequence.transactions.Transaction = {
@@ -651,9 +570,8 @@ And that has made all the difference.
       }
 
       const txnResp = await signer.sendTransactionBatch([tx])
-      // await txnResp.wait() // optional as sendTransactionBatch already waits for the receipt
-      console.log('txnResponse:', txnResp)
-      addNewConsoleLine(`txnResponse: ${JSON.stringify(txnResp)}`)
+      appendConsoleLine(`txnResponse: ${JSON.stringify(txnResp)}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -678,8 +596,7 @@ And that has made all the difference.
   const send1155Tokens = async () => {
     try {
       resetConsole()
-      console.log('TODO')
-      addNewConsoleLine('TODO')
+      appendConsoleLine('TODO')
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -690,6 +607,7 @@ And that has made all the difference.
   const contractExample = async (signer?: sequence.provider.Web3Signer) => {
     try {
       resetConsole()
+
       const wallet = sequence.getWallet()
 
       signer = signer || wallet.getSigner(chainId)
@@ -698,9 +616,7 @@ And that has made all the difference.
         'function balanceOf(address owner) view returns (uint256)',
         'function decimals() view returns (uint8)',
         'function symbol() view returns (string)',
-
         'function transfer(address to, uint amount) returns (bool)',
-
         'event Transfer(address indexed from, address indexed to, uint amount)'
       ]
 
@@ -708,14 +624,13 @@ And that has made all the difference.
       const address = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
 
       const usdc = new ethers.Contract(address, abi, signer)
-      const usdSymbol = await usdc.symbol()
 
-      console.log(`Token symbol: ${usdSymbol}`)
-      addNewConsoleLine(`Token symbol: ${usdSymbol}`)
+      const usdSymbol = await usdc.symbol()
+      appendConsoleLine(`Token symbol: ${usdSymbol}`)
 
       const balance = await usdc.balanceOf(await signer.getAddress())
-      console.log('Token Balance', balance.toString())
       appendConsoleLine(`Token Balance: ${balance.toString()}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -726,6 +641,7 @@ And that has made all the difference.
   const fetchTokenBalances = async () => {
     try {
       resetConsole()
+
       const wallet = sequence.getWallet()
 
       const signer = wallet.getSigner(chainId)
@@ -737,8 +653,8 @@ And that has made all the difference.
         accountAddress: accountAddress,
         includeMetadata: true
       })
-      console.log('tokens in your account:', tokenBalances)
-      addNewConsoleLine(`tokens in your account: ${JSON.stringify(tokenBalances)}`)
+
+      appendConsoleLine(`tokens in your account: ${JSON.stringify(tokenBalances)}`)
 
       // NOTE: you can put any NFT/collectible address in the `contractAddress` field and it will return all of the balances + metadata.
       // We use the Skyweaver production contract address here for demo purposes, but try another one :)
@@ -747,8 +663,8 @@ And that has made all the difference.
         includeMetadata: true,
         contractAddress: '0x631998e91476DA5B870D741192fc5Cbc55F5a52E'
       })
-      console.log('skyweaver collectibles in your account:', skyweaverCollectibles)
       appendConsoleLine(`skyweaver collectibles in your account: ${JSON.stringify(skyweaverCollectibles)}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
@@ -756,31 +672,24 @@ And that has made all the difference.
     }
   }
 
-  // const sendBatchTransaction = async () => {
-  //   console.log('TODO')
-  // }
+  const appendConsoleLine = (message: string, clear = false) => {
+    console.log(message)
 
-  const appendConsoleLine = (message: string) => {
+    if (clear) {
+      return setConsoleMsg(message)
+    }
+
     return setConsoleMsg(prevState => {
       return `${prevState}\n\n${message}`
     })
   }
 
   const resetConsole = () => {
-    setConsoleMsg(null)
     setConsoleLoading(true)
   }
 
   interface AddNewConsoleLineOptions {
     logMessage?: boolean
-  }
-  const addNewConsoleLine = (message: string, options?: AddNewConsoleLineOptions) => {
-    setConsoleMsg(() => {
-      return message
-    })
-    if (options && options.logMessage) {
-      console.log(message)
-    }
   }
 
   const consoleWelcomeMessage = () => {
@@ -849,7 +758,7 @@ And that has made all the difference.
           name="chainId"
           label={'Network'}
           labelLocation="top"
-          onValueChange={value => handleChainChange(Number(value))}
+          onValueChange={value => setChainId(Number(value)) }
           defaultValue={String(defaultChainId)}
           options={[
             ...Object.values(networks).map(network => ({
@@ -1006,33 +915,5 @@ And that has made all the difference.
     </Box>
   )
 }
-
-// wallet.on("message", (message) => {
-//   console.log("wallet event (message):", message)
-// })
-
-// wallet.on("accountsChanged", (p) => {
-//   console.log("wallet event (accountsChanged):", p)
-// })
-
-// wallet.on("chainChanged", (p) => {
-//   console.log("wallet event (chainChanged):", p)
-// })
-
-// wallet.on("connect", (p) => {
-//   console.log("wallet event (connect):", p)
-// })
-
-// wallet.on("disconnect", (p) => {
-//   console.log("wallet event (disconnect):", p)
-// })
-
-// wallet.on("open", (p) => {
-//   console.log("wallet event (open):", p)
-// })
-
-// wallet.on("close", (p) => {
-//   console.log("wallet event (close):", p)
-// })
 
 export default React.memo(App)
