@@ -26,40 +26,38 @@ import skyweaverBannerUrl from './images/skyweaver-banner.png'
 import { Console } from './components/Console'
 import { ConnectOptions, OpenWalletIntent, Settings } from '@0xsequence/provider'
 import { Group } from './components/Group'
-import { ChainId, NetworkConfig } from '@0xsequence/network'
+import { ChainId } from '@0xsequence/network'
 import { networkImages } from './images/networks'
+import { getDefaultChainId, saveDefaultChainId } from './helpers'
 
 configureLogger({ logLevel: 'DEBUG' })
 
-// Configure Sequence wallet
-const walletAppURL = import.meta.env.VITE_WALLET_APP_URL || 'https://sequence.app'
+// Specify your desired default chain id. NOTE: you can communicate to multiple
+// chains at the same time without even having to switch the network, but a default
+// chain is required.
+const defaultChainId = getDefaultChainId() || ChainId.MAINNET
+// const defaultChainId = ChainId.POLYGON
+// const defaultChainId = ChainId.GOERLI
+// const defaultChainId = ChainId.ARBITRUM
+// const defaultChainId = ChainId.AVALANCHE
+// etc.. see the full list here: https://docs.sequence.xyz/multi-chain-support
 
-// To use any other network as default
-// call `initWallet` with the desired chainId
-const defaultChainId = ChainId.POLYGON
-sequence.initWallet(defaultChainId, { walletAppURL })
-
-// Get sequence wallet instance
-const wallet = sequence.getWallet()
+// Init the sequence wallet library at the top-level of your project with
+// your designed default chain id
+sequence.initWallet(defaultChainId)
 
 // App component
 const App = () => {
   const [consoleMsg, setConsoleMsg] = useState<null | string>(null)
   const [consoleLoading, setConsoleLoading] = useState<boolean>(false)
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
-  const [networks, setNetworks] = useState<NetworkConfig[]>([])
 
   // Selected network is tracked in the dapp state
   // Sequence wallet allows talking to any network, any time
   // there is no need to switch networks
   const [chainId, setChainId] = useState<ChainId | undefined>()
 
-  useEffect(() => {
-    ;(async () => {
-      const networks = await wallet.getNetworks()
-      setNetworks(networks)
-    })()
-  }, [wallet])
+  const wallet = sequence.getWallet()
 
   useEffect(() => {
     ;(async () => {
@@ -147,8 +145,8 @@ const App = () => {
         }
       }
 
-      const networks = await wallet.getNetworks()
-      setNetworks(networks)
+      // const networks = await wallet.getNetworks()
+      // setNetworks(networks)
 
       setConsoleLoading(false)
       if (connectDetails.connected) {
@@ -707,6 +705,24 @@ And that has made all the difference.
     setConsoleMsg('An error occurred')
   }
 
+  // default network selector
+  useEffect(() => {
+    if (chainId === undefined) return
+    if (defaultChainId !== chainId && !wallet.isConnected()) {
+      saveDefaultChainId(chainId)
+      window.location.reload()
+    } else {
+      // TODO: wallet.switchNetwork(chainId) etc..
+      console.log('switching network to:', chainId)
+    }
+  }, [chainId])
+
+  // networks list, filtered and sorted
+  const omitNetworks = [4, 31337, 31338, 1313161554, 1313161556]
+  const networks = Object.values(sequence.network.networks)
+    .filter(val => (omitNetworks.indexOf(val.chainId) < 0))
+    .sort((a, b) => a.title > b.title ? 1 : -1)
+
   return (
     <Box marginY="0" marginX="auto" paddingX="6" style={{ maxWidth: '720px', marginTop: '80px', marginBottom: '80px' }}>
       <Box marginBottom="10">
@@ -799,21 +815,25 @@ And that has made all the difference.
         <Button
           width="full"
           shape="square"
-          onClick={() =>
+          onClick={() => {
+            const email = prompt('Auto-email login, please specify the email address:')
             connect({
               authorize: true,
               settings: {
                 // Specify signInWithEmail with an email address to allow user automatically sign in with the email option.
-                signInWithEmail: 'noreply@horizon.io',
+                signInWithEmail: email,
                 theme: 'dark',
                 bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`
               }
             })
-          }
+          }}
           label="Connect with Email"
         />
         <Button width="full" shape="square" onClick={() => disconnect()} label="Disconnect" />
-        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => openWallet()} label="Open Wallet" />
+      </Group>
+
+      <Group label="Basics">
+      <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => openWallet()} label="Open Wallet" />
         <Button
           width="full"
           shape="square"
@@ -917,3 +937,9 @@ And that has made all the difference.
 }
 
 export default React.memo(App)
+
+////////////////////////////////////////////////////////////////////////////////////////
+// For Sequence core dev team -- app developers can ignore
+const walletAppURL = import.meta.env.VITE_WALLET_APP_URL || 'https://sequence.app'
+sequence.initWallet(defaultChainId, { walletAppURL })
+////////////////////////////////////////////////////////////////////////////////////////
