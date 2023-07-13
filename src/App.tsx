@@ -145,9 +145,6 @@ const App = () => {
         }
       }
 
-      // const networks = await wallet.getNetworks()
-      // setNetworks(networks)
-
       setConsoleLoading(false)
       if (connectDetails.connected) {
         setChainId(await wallet.getChainId())
