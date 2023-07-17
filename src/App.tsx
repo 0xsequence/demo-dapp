@@ -715,7 +715,7 @@ And that has made all the difference.
   }, [chainId])
 
   // networks list, filtered and sorted
-  const omitNetworks = [4, 31337, 31338, 1313161554, 1313161556]
+  const omitNetworks = [ChainId.RINKEBY, ChainId.HARDHAT, ChainId.HARDHAT_2, ChainId.KOVAN, ChainId.FANTOM_TESTNET, ChainId.ROPSTEN, ChainId.AURORA, ChainId.AURORA_TESTNET]
   const networks = Object.values(sequence.network.networks)
     .filter(val => (omitNetworks.indexOf(val.chainId) < 0))
     .sort((a, b) => a.title > b.title ? 1 : -1)
