@@ -14,7 +14,7 @@
     "unlink-sequence": "../sequence.js/scripts/pnpm-link.sh unlink"
   },
   "dependencies": {
-    "0xsequence": "1.0.0",
+    "0xsequence": "1.0.4",
     "@0xsequence/design-system": "^1.0.5",
     "@0xsequence/ethauth": "^0.8.1",
     "@0xsequence/network": "1.0.0",
