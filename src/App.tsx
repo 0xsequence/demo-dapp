@@ -32,6 +32,9 @@ import { getDefaultChainId, saveDefaultChainId } from './helpers'
 
 configureLogger({ logLevel: 'DEBUG' })
 
+const DEFAULT_WALLET_APP_URL = 'https://sequence.app'
+const DEFAULT_API_URL = 'https://api.sequence.app'
+
 // Specify your desired default chain id. NOTE: you can communicate to multiple
 // chains at the same time without even having to switch the network, but a default
 // chain is required.
@@ -42,9 +45,22 @@ const defaultChainId = getDefaultChainId() || ChainId.MAINNET
 // const defaultChainId = ChainId.AVALANCHE
 // etc.. see the full list here: https://docs.sequence.xyz/multi-chain-support
 
-// Init the sequence wallet library at the top-level of your project with
-// your designed default chain id
-sequence.initWallet(defaultChainId)
+// For Sequence core dev team -- app developers can ignore
+// a custom wallet app url can specified in the query string
+const urlParams = new URLSearchParams(window.location.search)
+let walletAppURL = urlParams.get('walletAppURL')
+
+if (walletAppURL && walletAppURL.length > 0) {
+  // Wallet can point to a custom wallet app url
+  // NOTICE: this is not needed, unless testing an alpha version of the wallet
+  sequence.initWallet(defaultChainId, { walletAppURL })
+} else {
+  walletAppURL = DEFAULT_WALLET_APP_URL
+
+  // Init the sequence wallet library at the top-level of your project with
+  // your designed default chain id
+  sequence.initWallet(defaultChainId)
+}
 
 // App component
 const App = () => {
@@ -116,7 +132,15 @@ const App = () => {
 
       // Example of how to verify using ETHAuth via Sequence API
       if (connectOptions.authorize) {
-        const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
+        let apiUrl = urlParams.get('apiUrl')
+
+        if (!apiUrl || apiUrl.length === 0) {
+          apiUrl = DEFAULT_API_URL
+        }
+
+        const api = new sequence.api.SequenceAPIClient(apiUrl)
+        // or just
+        // const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
 
         const { isValid } = await api.isValidETHAuthProof({
           chainId: defaultChainId.toString(),
@@ -938,9 +962,3 @@ And that has made all the difference.
 }
 
 export default React.memo(App)
-
-////////////////////////////////////////////////////////////////////////////////////////
-// For Sequence core dev team -- app developers can ignore
-const walletAppURL = import.meta.env.VITE_WALLET_APP_URL || 'https://sequence.app'
-sequence.initWallet(defaultChainId, { walletAppURL })
-////////////////////////////////////////////////////////////////////////////////////////
