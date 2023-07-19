@@ -357,6 +357,15 @@ And that has made all the difference.
       appendConsoleLine(`isValid?: ${isValid}`)
       if (!isValid) throw new Error('sig invalid')
 
+      const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
+      const { isValid: isValidAPI } = await api.isValidMessageSignature({
+        chainId: `${await signer.getChainId()}`,
+        walletAddress: await wallet.getAddress(),
+        message,
+        signature: sig
+      })
+      appendConsoleLine(`isValidAPI?: ${isValidAPI}`)
+
       setConsoleLoading(false)
     } catch (e) {
       console.error(e)
