@@ -59,7 +59,7 @@ if (walletAppURL && walletAppURL.length > 0) {
 
   // Init the sequence wallet library at the top-level of your project with
   // your designed default chain id
-  sequence.initWallet(defaultChainId)
+  sequence.initWallet(defaultChainId, { walletAppURL })
 }
 
 // App component
@@ -241,7 +241,7 @@ const App = () => {
       resetConsole()
 
       appendConsoleLine(`selected chainId: ${chainId}`)
-      
+
       const topChainId = await wallet.getChainId()
       appendConsoleLine(`top chainId: ${topChainId}`)
 
@@ -333,7 +333,7 @@ const App = () => {
   const signMessage = async () => {
     try {
       resetConsole()
-  
+
       const wallet = sequence.getWallet()
 
       appendConsoleLine('signing message...')
@@ -740,13 +740,19 @@ And that has made all the difference.
 
   // networks list, filtered and sorted
   const omitNetworks = [
-    ChainId.RINKEBY, ChainId.HARDHAT, ChainId.HARDHAT_2, ChainId.KOVAN,
-    ChainId.FANTOM, ChainId.FANTOM_TESTNET, ChainId.ROPSTEN,
-    ChainId.AURORA, ChainId.AURORA_TESTNET
+    ChainId.RINKEBY,
+    ChainId.HARDHAT,
+    ChainId.HARDHAT_2,
+    ChainId.KOVAN,
+    ChainId.FANTOM,
+    ChainId.FANTOM_TESTNET,
+    ChainId.ROPSTEN,
+    ChainId.AURORA,
+    ChainId.AURORA_TESTNET
   ]
   const networks = Object.values(sequence.network.networks)
-    .filter(val => (omitNetworks.indexOf(val.chainId) < 0))
-    .sort((a, b) => a.title > b.title ? 1 : -1)
+    .filter(val => omitNetworks.indexOf(val.chainId) < 0)
+    .sort((a, b) => (a.title > b.title ? 1 : -1))
 
   return (
     <Box marginY="0" marginX="auto" paddingX="6" style={{ maxWidth: '720px', marginTop: '80px', marginBottom: '80px' }}>
@@ -799,7 +805,7 @@ And that has made all the difference.
           name="chainId"
           label={'Network'}
           labelLocation="top"
-          onValueChange={value => setChainId(Number(value)) }
+          onValueChange={value => setChainId(Number(value))}
           defaultValue={String(defaultChainId)}
           options={[
             ...Object.values(networks).map(network => ({
@@ -858,7 +864,7 @@ And that has made all the difference.
       </Group>
 
       <Group label="Basics">
-      <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => openWallet()} label="Open Wallet" />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => openWallet()} label="Open Wallet" />
         <Button
           width="full"
           shape="square"
@@ -907,20 +913,8 @@ And that has made all the difference.
       </Group>
 
       <Group label="Transactions">
-        <Button
-          width="full"
-          shape="square"
-          disabled={!isWalletConnected}
-          onClick={() => sendETH()}
-          label="Send funds"
-        />
-        <Button
-          width="full"
-          shape="square"
-          disabled={!isWalletConnected}
-          onClick={() => sendETHSidechain()}
-          label="Send on L2"
-        />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => sendETH()} label="Send funds" />
+        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => sendETHSidechain()} label="Send on L2" />
         <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => sendDAI()} label="Send DAI" />
         <Button
           width="full"
