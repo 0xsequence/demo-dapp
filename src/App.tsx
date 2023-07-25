@@ -173,6 +173,7 @@ const App = () => {
       if (connectDetails.connected) {
         setChainId(await wallet.getChainId())
         appendConsoleLine('Wallet connected!')
+        appendConsoleLine(`shared email: ${connectDetails.email}`)
         setIsWalletConnected(true)
       } else {
         appendConsoleLine('Failed to connect wallet - ' + connectDetails.error)
