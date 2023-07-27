@@ -73,8 +73,8 @@ const App = () => {
   const [showChainId, setShowChainId] = useState<number>(wallet.getChainId())
 
   useMemo(() => {
-    wallet.on('chainChanged', (chainId: number) => {
-      setShowChainId(chainId)
+    wallet.on('chainChanged', (chainId: string) => {
+      setShowChainId(ethers.BigNumber.from(chainId).toNumber())
     })
   }, [])
 
