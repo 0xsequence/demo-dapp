@@ -10,16 +10,17 @@
     "build": "BUILD_PATH='./dist' tsc && vite build",
     "serve": "vite preview",
     "dist": "pnpm build",
-    "link-sequence": "../sequence.js/scripts/pnpm-link.sh link",
-    "unlink-sequence": "../sequence.js/scripts/pnpm-link.sh unlink"
+    "link-sequence": "pnpm run clear:vite:cache && ../sequence.js/scripts/pnpm-link.sh link",
+    "unlink-sequence": "pnpm run clear:vite:cache && ../sequence.js/scripts/pnpm-link.sh unlink",
+    "clear:vite:cache": "rm -rf node_modules/.vite/"
   },
   "dependencies": {
-    "0xsequence": "1.0.4",
+    "0xsequence": "^1.1.0",
     "@0xsequence/design-system": "^1.0.5",
     "@0xsequence/ethauth": "^0.8.1",
-    "@0xsequence/network": "1.0.0",
-    "@0xsequence/provider": "1.0.0",
-    "@0xsequence/utils": "1.0.0",
+    "@0xsequence/network": "^1.1.0",
+    "@0xsequence/provider": "^1.1.0",
+    "@0xsequence/utils": "^1.1.0",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
