@@ -524,7 +524,11 @@ And that has made all the difference.
 
       signer = signer || wallet.getSigner() // select DefaultChain signer by default
 
-      const toAddress = ethers.Wallet.createRandom().address
+      // Sending the funds to the wallet itself
+      // so we don't lose any funds ;-)
+      // (of course, you can send anywhere)
+      const toAddress = await signer.getAddress()
+
       const amount = ethers.utils.parseUnits('1', 1)
 
       // (USDC address on Goerli)
@@ -557,7 +561,11 @@ And that has made all the difference.
 
       signer = signer || wallet.getSigner() // select DefaultChain signer by default
 
-      const toAddress = ethers.Wallet.createRandom().address
+      // Sending the funds to the wallet itself
+      // so we don't lose any funds ;-)
+      // (of course, you can send anywhere)
+      const toAddress = await signer.getAddress()
+
       const amount = ethers.utils.parseUnits('0.05', 18)
       const daiContractAddress = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063' // (DAI address on Polygon)
 
