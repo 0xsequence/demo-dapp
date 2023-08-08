@@ -48,18 +48,16 @@ const defaultChainId = getDefaultChainId() || ChainId.MAINNET
 // For Sequence core dev team -- app developers can ignore
 // a custom wallet app url can specified in the query string
 const urlParams = new URLSearchParams(window.location.search)
-let walletAppURL = urlParams.get('walletAppURL')
+let walletAppURL = urlParams.get('walletAppURL') ?? DEFAULT_WALLET_APP_URL
 
 if (walletAppURL && walletAppURL.length > 0) {
   // Wallet can point to a custom wallet app url
   // NOTICE: this is not needed, unless testing an alpha version of the wallet
   sequence.initWallet({ defaultNetwork: defaultChainId, transports: { walletAppURL } })
 } else {
-  walletAppURL = DEFAULT_WALLET_APP_URL
-
   // Init the sequence wallet library at the top-level of your project with
   // your designed default chain id
-  sequence.initWallet({ defaultNetwork: defaultChainId })
+  sequence.initWallet({ defaultNetwork: defaultChainId, transports: { walletAppURL } })
 }
 
 // App component
