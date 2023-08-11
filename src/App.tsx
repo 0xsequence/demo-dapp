@@ -235,7 +235,7 @@ const App = () => {
   const getChainID = async () => {
     try {
       resetConsole()
-      
+
       const topChainId = wallet.getChainId()
       appendConsoleLine(`top chainId: ${topChainId}`)
 
@@ -352,12 +352,7 @@ And that has made all the difference.
       const sig = await signer.signMessage(message)
       appendConsoleLine(`signature: ${sig}`)
 
-      const isValid = await wallet.utils.isValidMessageSignature(
-        wallet.getAddress(),
-        message,
-        sig,
-        await signer.getChainId()
-      )
+      const isValid = await wallet.utils.isValidMessageSignature(wallet.getAddress(), message, sig, await signer.getChainId())
       appendConsoleLine(`isValid?: ${isValid}`)
       if (!isValid) throw new Error('sig invalid')
 
@@ -420,12 +415,7 @@ And that has made all the difference.
       appendConsoleLine(`signature: ${sig}`)
 
       // validate
-      const isValid = await wallet.utils.isValidTypedDataSignature(
-        wallet.getAddress(),
-        typedData,
-        sig,
-        await signer.getChainId()
-      )
+      const isValid = await wallet.utils.isValidTypedDataSignature(wallet.getAddress(), typedData, sig, await signer.getChainId())
       appendConsoleLine(`isValid?: ${isValid}`)
 
       setConsoleLoading(false)
@@ -784,7 +774,7 @@ And that has made all the difference.
           name="chainId"
           label={'Network'}
           labelLocation="top"
-          onValueChange={value => wallet.setDefaultChainId(Number(value)) }
+          onValueChange={value => wallet.setDefaultChainId(Number(value))}
           value={String(showChainId)}
           options={[
             ...Object.values(networks).map(network => ({
@@ -802,7 +792,12 @@ And that has made all the difference.
 
       <Group label="Connection">
         <Button width="full" shape="square" onClick={() => connect()} label="Connect" />
-        <Button width="full" shape="square" onClick={() => connect({ app: 'Demo Dapp', authorize: true })} label="Connect & Auth" />
+        <Button
+          width="full"
+          shape="square"
+          onClick={() => connect({ app: 'Demo Dapp', authorize: true })}
+          label="Connect & Auth"
+        />
         <Button
           width="full"
           shape="square"
@@ -841,6 +836,24 @@ And that has made all the difference.
           }}
           label="Connect with Email"
         />
+        <Button
+          width="full"
+          shape="square"
+          onClick={() => {
+            connect({
+              app: 'Demo Dapp',
+              authorize: true,
+              settings: {
+                // Specify signInWithEmail with an email address to allow user automatically sign in with the email option.
+                signInWith: 'google',
+                theme: 'dark',
+                bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`
+              }
+            })
+          }}
+          label="Connect with Google"
+        />
+
         <Button width="full" shape="square" onClick={() => disconnect()} label="Disconnect" />
       </Group>
 
