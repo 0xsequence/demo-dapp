@@ -22,6 +22,7 @@ import { configureLogger } from '@0xsequence/utils'
 
 import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
+import skyweaverBannerLargeUrl from './images/skyweaver-banner-large.png'
 
 import { Console } from './components/Console'
 import { ConnectOptions, OpenWalletIntent, Settings } from '@0xsequence/provider'
@@ -809,7 +810,8 @@ And that has made all the difference.
                 // Specify signInOptions to pick the available sign in options.
                 // signInOptions: ['email', 'google', 'apple'],
                 theme: 'dark',
-                bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`,
+                bannerUrl: `${window.location.origin}${skyweaverBannerLargeUrl}`,
+                bannerSize: 'large',
                 includedPaymentProviders: ['moonpay'],
                 defaultFundingCurrency: 'matic',
                 defaultPurchaseAmount: 111
