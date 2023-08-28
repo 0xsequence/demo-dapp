@@ -811,7 +811,7 @@ And that has made all the difference.
                 // signInOptions: ['email', 'google', 'apple'],
                 theme: 'dark',
                 bannerUrl: `${window.location.origin}${skyweaverBannerLargeUrl}`,
-                bannerSize: 'large',
+                bannerSize: 'medium',
                 includedPaymentProviders: ['moonpay'],
                 defaultFundingCurrency: 'matic',
                 defaultPurchaseAmount: 111
