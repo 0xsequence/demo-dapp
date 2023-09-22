@@ -88,9 +88,12 @@ const App = () => {
 
   useEffect(() => {
     // Wallet events
-    wallet.on('disconnect', () => {
-      console.log('wallet disconnected')
-      disconnect() // optional method, but useful in this example
+    wallet.client.onOpen(() => {
+      console.log('wallet window opened')
+    })
+
+    wallet.client.onClose(() => {
+      console.log('wallet window closed')
     })
   }, [wallet])
 
