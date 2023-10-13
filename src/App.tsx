@@ -31,6 +31,8 @@ import { ChainId } from '@0xsequence/network'
 import { networkImages } from './images/networks'
 import { getDefaultChainId, saveDefaultChainId } from './helpers'
 
+import { isValidMessageSignature, isValidTypedDataSignature } from 'ethsigning'
+
 configureLogger({ logLevel: 'DEBUG' })
 
 const DEFAULT_WALLET_APP_URL = 'https://sequence.app'
@@ -156,11 +158,11 @@ const App = () => {
         if (connectDetails.proof) {
           const decodedProof = await ethAuth.decodeProof(connectDetails.proof.proofString, true)
 
-          const isValid = await wallet.utils.isValidTypedDataSignature(
+          const isValid = await isValidTypedDataSignature(
             wallet.getAddress(),
             connectDetails.proof.typedData,
             decodedProof.signature,
-            ethers.BigNumber.from(connectDetails.chainId).toNumber()
+            wallet.getProvider()
           )
 
           appendConsoleLine(`connected using chainId: ${ethers.BigNumber.from(connectDetails.chainId).toString()}`)
@@ -356,7 +358,7 @@ And that has made all the difference.
       const sig = await signer.signMessage(message)
       appendConsoleLine(`signature: ${sig}`)
 
-      const isValid = await wallet.utils.isValidMessageSignature(wallet.getAddress(), message, sig, await signer.getChainId())
+      const isValid = await isValidMessageSignature(wallet.getAddress(), message, sig, signer.getProvider())
       appendConsoleLine(`isValid?: ${isValid}`)
       if (!isValid) throw new Error('sig invalid')
 
@@ -419,7 +421,7 @@ And that has made all the difference.
       appendConsoleLine(`signature: ${sig}`)
 
       // validate
-      const isValid = await wallet.utils.isValidTypedDataSignature(wallet.getAddress(), typedData, sig, await signer.getChainId())
+      const isValid = await isValidTypedDataSignature(wallet.getAddress(), typedData, sig, signer.getProvider())
       appendConsoleLine(`isValid?: ${isValid}`)
 
       setConsoleLoading(false)

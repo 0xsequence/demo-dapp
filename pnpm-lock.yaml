@@ -50,6 +50,9 @@ dependencies:
   ethers:
     specifier: ^5.7.2
     version: 5.7.2
+  ethsigning:
+    specifier: ^0.0.2
+    version: 0.0.2
   framer-motion:
     specifier: ^9.0.1
     version: 9.0.1(react-dom@18.2.0)(react@18.2.0)
@@ -604,6 +607,7 @@ packages:
 
   /@emotion/memoize@0.7.4:
     resolution: {integrity: sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==}
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -3276,6 +3280,15 @@ packages:
       '@ethersproject/wallet': 5.7.0
       '@ethersproject/web': 5.7.1
       '@ethersproject/wordlists': 5.7.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
+  /ethsigning@0.0.2:
+    resolution: {integrity: sha512-qEB5WH9Q16qoy6gqF79jqH9+jvW+qQvPXIgIXVMksPZUl39jQBsl2nbK/SyCSvSPiwCF2f4hUVoe9rcppi/hKQ==}
+    dependencies:
+      ethers: 5.7.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
