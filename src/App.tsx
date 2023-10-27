@@ -75,6 +75,7 @@ const App = () => {
 
   const [showChainId, setShowChainId] = useState<number>(wallet.getChainId())
   const [isOpen, toggleModal] = useState(false)
+  const [warning, setWarning] = useState(false)
 
   useMemo(() => {
     wallet.on('chainChanged', (chainId: string) => {
@@ -749,6 +750,20 @@ And that has made all the difference.
       }
     }, [email, isOpen])
 
+    const sanitizeEmail = (email: string) => {
+      // Trim unnecessary spaces
+      email = email.trim();
+  
+      // Check if the email matches the pattern of a typical email
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+      if (emailRegex.test(email)) {
+        console.log('true email')
+          return true;
+      }
+  
+      return false
+    }
+
   return (
     <Box marginY="0" marginX="auto" paddingX="6" style={{ maxWidth: '720px', marginTop: '80px', marginBottom: '80px' }}>
       <Box marginBottom="10">
@@ -976,12 +991,28 @@ And that has made all the difference.
                             setEmail(ev.target.value)
                           }}></TextInput>
                       </Box>
-
+                      {
+                        warning 
+                        ? 
+                          <Box marginTop="6">
+                            <Text marginTop="5" variant="normal" color="warning">
+                              please input an email with correct format
+                            </Text>
+                          </Box>
+                        : null
+                      }
                       <Box gap="2" marginY="4">
                           <Button
                             variant="primary"
                             label="Login"
-                            onClick={() => toggleModal(false)}
+                            onClick={() => {
+                              if(sanitizeEmail(email)){
+                                setWarning(false)
+                                toggleModal(false)
+                              } else {
+                                setWarning(true)
+                              }
+                            }}
                             data-id="login"
                           />
                       </Box>
