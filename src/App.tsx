@@ -757,7 +757,6 @@ And that has made all the difference.
       // Check if the email matches the pattern of a typical email
       const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
       if (emailRegex.test(email)) {
-        console.log('true email')
           return true;
       }
   
