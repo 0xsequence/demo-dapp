@@ -972,7 +972,7 @@ And that has made all the difference.
         {
           isOpen 
             && 
-            <Modal  onClose={() => toggleModal(false)}>
+            <Modal onClose={() => toggleModal(false)} size={'sm'}>
                 <Box
                   flexDirection="column"
                   justifyContent="space-between"
