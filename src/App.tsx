@@ -8,10 +8,13 @@ import {
   Card,
   TransactionIcon,
   Select,
-  TokenImage
+  TokenImage,
+  TextInput,
+  Modal
 } from '@0xsequence/design-system'
+import { AnimatePresence } from 'framer-motion'
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, SetStateAction } from 'react'
 import { ethers } from 'ethers'
 import { sequence } from '0xsequence'
 
@@ -64,12 +67,14 @@ if (walletAppURL && walletAppURL.length > 0) {
 // App component
 const App = () => {
   const [consoleMsg, setConsoleMsg] = useState<null | string>(null)
+  const [email, setEmail] = useState<null | string>(null)
   const [consoleLoading, setConsoleLoading] = useState<boolean>(false)
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
 
   const wallet = sequence.getWallet().getProvider()
 
   const [showChainId, setShowChainId] = useState<number>(wallet.getChainId())
+  const [isOpen, toggleModal] = useState(false)
 
   useMemo(() => {
     wallet.on('chainChanged', (chainId: string) => {
@@ -129,7 +134,7 @@ const App = () => {
       const connectDetails = await wallet.connect(connectOptions)
 
       // Example of how to verify using ETHAuth via Sequence API
-      if (connectOptions.authorize) {
+      if (connectOptions.authorize && connectDetails.connected) {
         let apiUrl = urlParams.get('apiUrl')
 
         if (!apiUrl || apiUrl.length === 0) {
@@ -727,6 +732,23 @@ And that has made all the difference.
     .filter(val => omitNetworks.indexOf(val.chainId) < 0)
     .sort((a, b) => (a.title > b.title ? 1 : -1))
 
+    useEffect(() => {
+      if(email && !isOpen) {
+        console.log(email)
+        connect({
+          app: 'Demo Dapp',
+          authorize: true,
+          settings: {
+            // Specify signInWithEmail with an email address to allow user automatically sign in with the email option.
+            signInWithEmail: email,
+            theme: 'dark',
+            bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`
+          }
+        })
+        setEmail(null)
+      }
+    }, [email, isOpen])
+
   return (
     <Box marginY="0" marginX="auto" paddingX="6" style={{ maxWidth: '720px', marginTop: '80px', marginBottom: '80px' }}>
       <Box marginBottom="10">
@@ -827,17 +849,7 @@ And that has made all the difference.
           width="full"
           shape="square"
           onClick={() => {
-            const email = prompt('Auto-email login, please specify the email address:')
-            connect({
-              app: 'Demo Dapp',
-              authorize: true,
-              settings: {
-                // Specify signInWithEmail with an email address to allow user automatically sign in with the email option.
-                signInWithEmail: email,
-                theme: 'dark',
-                bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`
-              }
-            })
+            toggleModal(true)
           }}
           label="Connect with Email"
         />
@@ -942,6 +954,42 @@ And that has made all the difference.
         />
       </Group>
 
+      <AnimatePresence>
+        {
+          isOpen 
+            && 
+            <Modal  onClose={() => toggleModal(false)}>
+                <Box
+                  flexDirection="column"
+                  justifyContent="space-between"
+                  height="full"
+                  padding="16"
+                >
+                  <Box flexDirection="column">
+                      <Box marginTop="6">
+                        <Text marginTop="5" variant="normal" color="text80">
+                          Auto-email login, please specify the email address
+                        </Text>
+                      </Box>
+                      <Box marginTop="4">
+                        <TextInput onChange={(ev: { target: { value: SetStateAction<string> } }) => {
+                            setEmail(ev.target.value)
+                          }}></TextInput>
+                      </Box>
+
+                      <Box gap="2" marginY="4">
+                          <Button
+                            variant="primary"
+                            label="Login"
+                            onClick={() => toggleModal(false)}
+                            data-id="login"
+                          />
+                      </Box>
+                    </Box>
+                  </Box>
+            </Modal>
+        }
+      </AnimatePresence>
       <Console message={consoleMsg} loading={consoleLoading} />
     </Box>
   )
