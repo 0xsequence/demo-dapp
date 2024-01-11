@@ -995,8 +995,8 @@ And that has made all the difference.
           width="full"
           shape="square"
           disabled={!isWalletConnected}
-          onClick={() => sendGoerliUSDC()}
-          label="Send USDC on Goerli"
+          onClick={() => sendSepoliaUSDC()}
+          label="Send USDC on Sepolia"
         />
       </Group>
 
