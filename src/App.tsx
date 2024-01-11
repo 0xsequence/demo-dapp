@@ -1,3 +1,7 @@
+import { AnimatePresence } from 'framer-motion'
+import React, { useState, useEffect, useMemo, SetStateAction } from 'react'
+import { ethers } from 'ethers'
+import { sequence } from '0xsequence'
 import {
   Box,
   Image,
@@ -12,31 +16,42 @@ import {
   TextInput,
   Modal
 } from '@0xsequence/design-system'
-import { AnimatePresence } from 'framer-motion'
-
-import React, { useState, useEffect, useMemo, SetStateAction } from 'react'
-import { ethers } from 'ethers'
-import { sequence } from '0xsequence'
-
 import { ETHAuth } from '@0xsequence/ethauth'
-import { ERC_20_ABI } from './constants/abi'
-
 import { configureLogger } from '@0xsequence/utils'
+import { ConnectOptions, OpenWalletIntent, Settings } from '@0xsequence/provider'
+import { ChainId } from '@0xsequence/network'
 
+import { ERC_20_ABI } from './constants/abi'
+import { Console } from './components/Console'
+import { Group } from './components/Group'
+import { getDefaultChainId, saveDefaultChainId } from './helpers'
+import { networkImages } from './images/networks'
 import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
 import skyweaverBannerLargeUrl from './images/skyweaver-banner-large.png'
 
-import { Console } from './components/Console'
-import { ConnectOptions, OpenWalletIntent, Settings } from '@0xsequence/provider'
-import { Group } from './components/Group'
-import { ChainId } from '@0xsequence/network'
-import { networkImages } from './images/networks'
-import { getDefaultChainId, saveDefaultChainId } from './helpers'
-
 configureLogger({ logLevel: 'DEBUG' })
 
-const DEFAULT_WALLET_APP_URL = 'https://sequence.app'
+interface Environment {
+  name: string
+  walletUrl: string
+}
+
+const environments: Environment[] = [
+  {
+    name: 'production',
+    walletUrl: 'https://sequence.app'
+  },
+  {
+    name: 'development',
+    walletUrl: 'https://dev.sequence.app'
+  },
+  {
+    name: 'local',
+    walletUrl: 'http://localhost:3333'
+  }
+]
+
 const DEFAULT_API_URL = 'https://api.sequence.app'
 
 // Specify your desired default chain id. NOTE: you can communicate to multiple
@@ -52,7 +67,10 @@ const defaultChainId = getDefaultChainId() || ChainId.MAINNET
 // For Sequence core dev team -- app developers can ignore
 // a custom wallet app url can specified in the query string
 const urlParams = new URLSearchParams(window.location.search)
-let walletAppURL = urlParams.get('walletAppURL') ?? DEFAULT_WALLET_APP_URL
+
+const env = urlParams.get('env') ?? 'production'
+const envConfig = environments.find(x => x.name === env)
+const walletAppURL = urlParams.get('walletAppURL') ?? envConfig.walletUrl
 
 if (walletAppURL && walletAppURL.length > 0) {
   // Wallet can point to a custom wallet app url
@@ -205,7 +223,7 @@ const App = () => {
 
     const settings: Settings = {
       theme: 'light',
-      includedPaymentProviders: ['moonpay', 'ramp', 'wyre'],
+      includedPaymentProviders: ['moonpay', 'ramp'],
       defaultFundingCurrency: 'eth',
       defaultPurchaseAmount: 400,
       lockFundingCurrencyToDefault: false
@@ -514,7 +532,7 @@ And that has made all the difference.
     }
   }
 
-  const sendGoerliUSDC = async (signer?: sequence.provider.SequenceSigner) => {
+  const sendSepoliaUSDC = async (signer?: sequence.provider.SequenceSigner) => {
     try {
       resetConsole()
 
@@ -529,7 +547,7 @@ And that has made all the difference.
 
       const amount = ethers.utils.parseUnits('1', 1)
 
-      // (USDC address on Goerli)
+      // (USDC address on Sepolia)
       const usdcAddress = '0x07865c6e87b9f70255377e024ace6630c1eaa37f'
 
       const tx: sequence.transactions.Transaction = {
@@ -541,7 +559,7 @@ And that has made all the difference.
         data: new ethers.utils.Interface(ERC_20_ABI).encodeFunctionData('transfer', [toAddress, amount.toHexString()])
       }
 
-      const txnResp = await signer.sendTransaction([tx], { chainId: ChainId.GOERLI })
+      const txnResp = await signer.sendTransaction([tx], { chainId: ChainId.SEPOLIA })
       appendConsoleLine(`txnResponse: ${JSON.stringify(txnResp)}`)
 
       setConsoleLoading(false)
@@ -653,8 +671,14 @@ And that has made all the difference.
 
       const signer = wallet.getSigner()
       const accountAddress = await signer.getAddress()
+      const networks = await wallet.getNetworks()
+      const network = networks.find(network => network.chainId === ChainId.POLYGON)
 
-      const indexer = new sequence.indexer.SequenceIndexerClient(sequence.indexer.SequenceIndexerServices.POLYGON)
+      if (!network) {
+        throw new Error(`Could not find Polygon network in networks list`)
+      }
+
+      const indexer = new sequence.indexer.SequenceIndexer(network.indexerUrl)
 
       const tokenBalances = await indexer.getTokenBalances({
         accountAddress: accountAddress,
@@ -720,11 +744,7 @@ And that has made all the difference.
     ChainId.HARDHAT,
     ChainId.HARDHAT_2,
     ChainId.KOVAN,
-    ChainId.FANTOM,
-    ChainId.FANTOM_TESTNET,
     ChainId.ROPSTEN,
-    ChainId.AURORA,
-    ChainId.AURORA_TESTNET,
     ChainId.HOMEVERSE_TESTNET,
     ChainId.BASE_GOERLI
   ]
@@ -733,35 +753,35 @@ And that has made all the difference.
     .filter(val => omitNetworks.indexOf(val.chainId) < 0)
     .sort((a, b) => (a.title > b.title ? 1 : -1))
 
-    useEffect(() => {
-      if(email && !isOpen) {
-        console.log(email)
-        connect({
-          app: 'Demo Dapp',
-          authorize: true,
-          settings: {
-            // Specify signInWithEmail with an email address to allow user automatically sign in with the email option.
-            signInWithEmail: email,
-            theme: 'dark',
-            bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`
-          }
-        })
-        setEmail(null)
-      }
-    }, [email, isOpen])
-
-    const sanitizeEmail = (email: string) => {
-      // Trim unnecessary spaces
-      email = email.trim();
-  
-      // Check if the email matches the pattern of a typical email
-      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-      if (emailRegex.test(email)) {
-          return true;
-      }
-  
-      return false
+  useEffect(() => {
+    if (email && !isOpen) {
+      console.log(email)
+      connect({
+        app: 'Demo Dapp',
+        authorize: true,
+        settings: {
+          // Specify signInWithEmail with an email address to allow user automatically sign in with the email option.
+          signInWithEmail: email,
+          theme: 'dark',
+          bannerUrl: `${window.location.origin}${skyweaverBannerUrl}`
+        }
+      })
+      setEmail(null)
     }
+  }, [email, isOpen])
+
+  const sanitizeEmail = (email: string) => {
+    // Trim unnecessary spaces
+    email = email.trim()
+
+    // Check if the email matches the pattern of a typical email
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+    if (emailRegex.test(email)) {
+      return true
+    }
+
+    return false
+  }
 
   return (
     <Box marginY="0" marginX="auto" paddingX="6" style={{ maxWidth: '720px', marginTop: '80px', marginBottom: '80px' }}>
@@ -791,6 +811,35 @@ And that has made all the difference.
       </Card>
 
       <Divider background="buttonGlass" />
+
+      <Box marginBottom="4">
+        <Select
+          name="environment"
+          label={'Environment'}
+          labelLocation="top"
+          onValueChange={value => {
+            // Set the new env url param
+            urlParams.set('env', value)
+
+            // Clear any existing walletAppURL overrides
+            urlParams.delete('walletAppURL')
+
+            // Update the url with the new params and refresh the page
+            window.location.search = urlParams.toString()
+          }}
+          value={env}
+          options={[
+            ...Object.values(environments).map(env => ({
+              label: (
+                <Box alignItems="center" gap="2">
+                  <Text capitalize>{env.name}</Text>
+                </Box>
+              ),
+              value: String(env.name)
+            }))
+          ]}
+        />
+      </Box>
 
       <Box marginBottom="4">
         <Text as="div" variant="small" color="text100">
@@ -969,56 +1018,48 @@ And that has made all the difference.
       </Group>
 
       <AnimatePresence>
-        {
-          isOpen 
-            && 
-            <Modal onClose={() => toggleModal(false)} size={'sm'}>
-                <Box
-                  flexDirection="column"
-                  justifyContent="space-between"
-                  height="full"
-                  padding="16"
-                >
-                  <Box flexDirection="column">
-                      <Box marginTop="6">
-                        <Text marginTop="5" variant="normal" color="text80">
-                          Auto-email login, please specify the email address
-                        </Text>
-                      </Box>
-                      <Box marginTop="4">
-                        <TextInput onChange={(ev: { target: { value: SetStateAction<string> } }) => {
-                            setEmail(ev.target.value)
-                          }}></TextInput>
-                      </Box>
-                      {
-                        warning 
-                        ? 
-                          <Box marginTop="6">
-                            <Text marginTop="5" variant="normal" color="warning">
-                              please input an email with correct format
-                            </Text>
-                          </Box>
-                        : null
-                      }
-                      <Box gap="2" marginY="4">
-                          <Button
-                            variant="primary"
-                            label="Login"
-                            onClick={() => {
-                              if(sanitizeEmail(email)){
-                                setWarning(false)
-                                toggleModal(false)
-                              } else {
-                                setWarning(true)
-                              }
-                            }}
-                            data-id="login"
-                          />
-                      </Box>
-                    </Box>
+        {isOpen && (
+          <Modal onClose={() => toggleModal(false)} size={'sm'}>
+            <Box flexDirection="column" justifyContent="space-between" height="full" padding="16">
+              <Box flexDirection="column">
+                <Box marginTop="6">
+                  <Text marginTop="5" variant="normal" color="text80">
+                    Auto-email login, please specify the email address
+                  </Text>
+                </Box>
+                <Box marginTop="4">
+                  <TextInput
+                    onChange={(ev: { target: { value: SetStateAction<string> } }) => {
+                      setEmail(ev.target.value)
+                    }}
+                  ></TextInput>
+                </Box>
+                {warning ? (
+                  <Box marginTop="6">
+                    <Text marginTop="5" variant="normal" color="warning">
+                      please input an email with correct format
+                    </Text>
                   </Box>
-            </Modal>
-        }
+                ) : null}
+                <Box gap="2" marginY="4">
+                  <Button
+                    variant="primary"
+                    label="Login"
+                    onClick={() => {
+                      if (sanitizeEmail(email)) {
+                        setWarning(false)
+                        toggleModal(false)
+                      } else {
+                        setWarning(true)
+                      }
+                    }}
+                    data-id="login"
+                  />
+                </Box>
+              </Box>
+            </Box>
+          </Modal>
+        )}
       </AnimatePresence>
       <Console message={consoleMsg} loading={consoleLoading} />
     </Box>
