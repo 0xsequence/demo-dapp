@@ -15,16 +15,12 @@
     "clear:vite:cache": "rm -rf node_modules/.vite/"
   },
   "dependencies": {
-    "0xsequence": "^1.1.13",
+    "0xsequence": "^1.6.2",
     "@0xsequence/design-system": "^1.0.14",
     "@0xsequence/ethauth": "^0.8.1",
-    "@0xsequence/network": "^1.1.13",
-    "@0xsequence/provider": "^1.1.13",
-    "@0xsequence/utils": "^1.1.13",
-    "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.4.0",
+    "@0xsequence/network": "^1.6.2",
+    "@0xsequence/provider": "^1.6.2",
+    "@0xsequence/utils": "^1.6.2",
     "@types/node": "^16.11.22",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
@@ -33,13 +29,11 @@
     "framer-motion": "^9.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "typescript": "^4.5.5",
-    "web-vitals": "^2.1.4"
+    "typescript": "^4.5.5"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": {
