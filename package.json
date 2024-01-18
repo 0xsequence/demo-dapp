@@ -16,15 +16,15 @@
   },
   "dependencies": {
     "0xsequence": "^1.6.2",
-    "@0xsequence/design-system": "^1.0.14",
+    "@0xsequence/design-system": "^1.2.3",
     "@0xsequence/ethauth": "^0.8.1",
     "@0xsequence/network": "^1.6.2",
     "@0xsequence/provider": "^1.6.2",
     "@0xsequence/utils": "^1.6.2",
-    "@types/node": "^16.11.22",
-    "@types/react": "^17.0.39",
-    "@types/react-dom": "^17.0.11",
-    "@vanilla-extract/css": "^1.9.3",
+    "@types/node": "^20.11.5",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@vanilla-extract/css": "^1.14.0",
     "ethers": "^5.7.2",
     "framer-motion": "^9.0.1",
     "react": "^18.2.0",
@@ -49,10 +49,10 @@
     ]
   },
   "devDependencies": {
-    "@vanilla-extract/vite-plugin": "^3.7.1",
-    "@vitejs/plugin-react": "^3.1.0",
-    "vite": "^4.1.1",
-    "vite-plugin-svgr": "^2.4.0",
-    "vite-tsconfig-paths": "^4.0.5"
+    "@vanilla-extract/vite-plugin": "^3.9.4",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.11",
+    "vite-plugin-svgr": "^4.2.0",
+    "vite-tsconfig-paths": "^4.3.1"
   }
 }
