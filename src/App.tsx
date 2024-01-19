@@ -19,16 +19,17 @@ import {
 import { ETHAuth } from '@0xsequence/ethauth'
 import { configureLogger } from '@0xsequence/utils'
 import { ConnectOptions, OpenWalletIntent, Settings } from '@0xsequence/provider'
-import { ChainId } from '@0xsequence/network'
+import { ChainId, NetworkType } from '@0xsequence/network'
 
 import { ERC_20_ABI } from './constants/abi'
 import { Console } from './components/Console'
 import { Group } from './components/Group'
 import { getDefaultChainId, saveDefaultChainId } from './helpers'
-import { networkImages } from './images/networks'
 import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
 import skyweaverBannerLargeUrl from './images/skyweaver-banner-large.png'
+
+const PROJECT_ACCESS_KEY = 'W4EjSIb6MencXr2yDevQE8xGAAAAAAAAA'
 
 configureLogger({ logLevel: 'DEBUG' })
 
@@ -75,11 +76,11 @@ const walletAppURL = urlParams.get('walletAppURL') ?? envConfig.walletUrl
 if (walletAppURL && walletAppURL.length > 0) {
   // Wallet can point to a custom wallet app url
   // NOTICE: this is not needed, unless testing an alpha version of the wallet
-  sequence.initWallet({ defaultNetwork: defaultChainId, transports: { walletAppURL } })
+  sequence.initWallet(PROJECT_ACCESS_KEY, { defaultNetwork: defaultChainId, transports: { walletAppURL } })
 } else {
   // Init the sequence wallet library at the top-level of your project with
   // your designed default chain id
-  sequence.initWallet({ defaultNetwork: defaultChainId, transports: { walletAppURL } })
+  sequence.initWallet(PROJECT_ACCESS_KEY, { defaultNetwork: defaultChainId, transports: { walletAppURL } })
 }
 
 // App component
@@ -749,9 +750,13 @@ And that has made all the difference.
     ChainId.BASE_GOERLI
   ]
 
-  const networks = Object.values(sequence.network.networks)
-    .filter(val => omitNetworks.indexOf(val.chainId) < 0)
-    .sort((a, b) => (a.title > b.title ? 1 : -1))
+  const mainnets = Object.values(sequence.network.networks)
+    .filter(network => network.type === NetworkType.MAINNET)
+    .sort((a, b) => a.chainId - b.chainId)
+  const testnets = Object.values(sequence.network.networks)
+    .filter(network => network.type === NetworkType.TESTNET)
+    .sort((a, b) => a.chainId - b.chainId)
+  const networks = [...mainnets, ...testnets].filter(network => !network.deprecated && !omitNetworks.includes(network.chainId))
 
   useEffect(() => {
     if (email && !isOpen) {
@@ -869,7 +874,7 @@ And that has made all the difference.
             ...Object.values(networks).map(network => ({
               label: (
                 <Box alignItems="center" gap="2">
-                  <TokenImage src={networkImages[network.chainId]} size="sm" />
+                  <TokenImage src={network.logoURI} size="sm" />
                   <Text>{network.title!}</Text>
                 </Box>
               ),
