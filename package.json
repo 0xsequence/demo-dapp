@@ -15,12 +15,12 @@
     "clear:vite:cache": "rm -rf node_modules/.vite/"
   },
   "dependencies": {
-    "0xsequence": "^1.7.1",
+    "0xsequence": "^1.8.0",
     "@0xsequence/design-system": "^1.2.3",
     "@0xsequence/ethauth": "^0.8.1",
-    "@0xsequence/network": "^1.7.1",
-    "@0xsequence/provider": "^1.7.1",
-    "@0xsequence/utils": "^1.7.1",
+    "@0xsequence/network": "^1.8.0",
+    "@0xsequence/provider": "^1.8.0",
+    "@0xsequence/utils": "^1.8.0",
     "@types/node": "^20.11.5",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",

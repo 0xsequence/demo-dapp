@@ -29,7 +29,7 @@ import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
 import skyweaverBannerLargeUrl from './images/skyweaver-banner-large.png'
 
-const PROJECT_ACCESS_KEY = 'W4EjSIb6MencXr2yDevQE8xGAAAAAAAAA'
+const PROJECT_ACCESS_KEY = 'AQAAAAAAAAbvrgpWEC2Aefg5qYStQmwjBpA'
 
 configureLogger({ logLevel: 'DEBUG' })
 
