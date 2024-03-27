@@ -339,7 +339,7 @@ const App = () => {
     }
   }
 
-  const signMessage = async () => {
+  const signMessageString = async () => {
     try {
       resetConsole()
 
@@ -376,6 +376,60 @@ I took the one less traveled by,
 And that has made all the difference.
 
 \u2601 \u2600 \u2602`
+
+      // sign
+      const sig = await signer.signMessage(message)
+      appendConsoleLine(`signature: ${sig}`)
+
+      const isValid = await wallet.utils.isValidMessageSignature(wallet.getAddress(), message, sig, await signer.getChainId())
+      appendConsoleLine(`isValid?: ${isValid}`)
+      if (!isValid) throw new Error('sig invalid')
+
+      setConsoleLoading(false)
+    } catch (e) {
+      console.error(e)
+      consoleErrorMessage()
+    }
+  }
+
+  const signMessageHex = async () => {
+    try {
+      resetConsole()
+
+      const wallet = sequence.getWallet()
+
+      appendConsoleLine('signing message...')
+      const signer = wallet.getSigner()
+
+      // Message in hex
+      const message = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Hello, world!'))
+
+      // sign
+      const sig = await signer.signMessage(message)
+      appendConsoleLine(`signature: ${sig}`)
+
+      const isValid = await wallet.utils.isValidMessageSignature(wallet.getAddress(), message, sig, await signer.getChainId())
+      appendConsoleLine(`isValid?: ${isValid}`)
+      if (!isValid) throw new Error('sig invalid')
+
+      setConsoleLoading(false)
+    } catch (e) {
+      console.error(e)
+      consoleErrorMessage()
+    }
+  }
+
+  const signMessageBytes = async () => {
+    try {
+      resetConsole()
+
+      const wallet = sequence.getWallet()
+
+      appendConsoleLine('signing message...')
+      const signer = wallet.getSigner()
+
+      // Message in hex
+      const message = ethers.utils.toUtf8Bytes('Hello, world!')
 
       // sign
       const sig = await signer.signMessage(message)
@@ -964,7 +1018,27 @@ And that has made all the difference.
       </Group>
 
       <Group label="Signing">
-        <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => signMessage()} label="Sign Message" />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => signMessageString()}
+          label="Sign Message (String)"
+        />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => signMessageHex()}
+          label="Sign Message (Hex)"
+        />
+        <Button
+          width="full"
+          shape="square"
+          disabled={!isWalletConnected}
+          onClick={() => signMessageBytes()}
+          label="Sign Message (Bytes)"
+        />
         <Button
           width="full"
           shape="square"
