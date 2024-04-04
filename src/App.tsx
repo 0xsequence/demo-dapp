@@ -1023,7 +1023,7 @@ And that has made all the difference.
           shape="square"
           disabled={!isWalletConnected}
           onClick={() => signMessageString()}
-          label="Sign Message (String)"
+          label="Sign Message"
         />
         <Button
           width="full"
