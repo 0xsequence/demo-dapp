@@ -905,14 +905,22 @@ And that has made all the difference.
           Wallet URL
         </Text>
 
-        <a href={walletAppURL} target="_blank" rel="noopener">
-          <Box gap="1" marginTop="1" alignItems="center">
-            <Text as="div" variant="normal" color="text80">
-              {walletAppURL}
-            </Text>
-            <ExternalLinkIcon />
-          </Box>
-        </a>
+        <Box
+          as="a"
+          href={walletAppURL}
+          target="_blank"
+          rel="noopener"
+          textDecoration="none"
+          gap="1"
+          marginTop="1"
+          alignItems="center"
+          color="text80"
+        >
+          <Text as="div" variant="normal" color="text80">
+            {walletAppURL}
+          </Text>
+          <ExternalLinkIcon />
+        </Box>
       </Box>
 
       <Divider background="buttonGlass" />

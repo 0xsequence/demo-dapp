@@ -17,7 +17,7 @@ export const Console = ({ message, loading }: ConsoleProps) => {
 
   return (
     <Collapsible label="Console" defaultOpen>
-      <Box as="pre" style={{ fontFamily: 'monospace', whiteSpace: 'break-spaces', overflowWrap: 'anywhere' }}>
+      <Box as="pre" color="text80" style={{ fontFamily: 'monospace', whiteSpace: 'break-spaces', overflowWrap: 'anywhere' }}>
         {message}
         {loading && getLoadingDots()}
         {
