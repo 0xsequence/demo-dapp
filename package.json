@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "0xsequence": "^1.9.17",
+    "@0xsequence/abi": "^1.9.17",
     "@0xsequence/design-system": "^1.4.0",
     "@0xsequence/ethauth": "^0.8.1",
     "@0xsequence/network": "^1.9.17",

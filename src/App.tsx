@@ -2,6 +2,7 @@ import { AnimatePresence } from 'framer-motion'
 import React, { useState, useEffect, useMemo, SetStateAction } from 'react'
 import { ethers } from 'ethers'
 import { sequence } from '0xsequence'
+import { walletContracts } from '@0xsequence/abi'
 import {
   Box,
   Image,
@@ -72,6 +73,7 @@ const urlParams = new URLSearchParams(window.location.search)
 const env = urlParams.get('env') ?? 'production'
 const envConfig = environments.find(x => x.name === env)
 const walletAppURL = urlParams.get('walletAppURL') ?? envConfig.walletUrl
+const showProhibitedActions = urlParams.has('showProhibitedActions')
 
 if (walletAppURL && walletAppURL.length > 0) {
   // Wallet can point to a custom wallet app url
@@ -758,6 +760,132 @@ And that has made all the difference.
     }
   }
 
+  const updateImplementation = async (signer?: sequence.provider.SequenceSigner) => {
+    try {
+      resetConsole()
+
+      const wallet = sequence.getWallet()
+
+      signer = signer || wallet.getSigner() // select DefaultChain signer by default
+
+      const transaction: sequence.transactions.Transaction = {
+        to: wallet.getAddress(),
+        data: new ethers.utils.Interface(
+          walletContracts.mainModule.abi
+        ).encodeFunctionData(
+          'updateImplementation', [ethers.constants.AddressZero]
+        )
+      }
+
+      const response = await signer.sendTransaction(transaction)
+      appendConsoleLine(`response: ${JSON.stringify(response)}`)
+      setConsoleLoading(false)
+    } catch (e) {
+      console.error(e)
+      consoleErrorMessage()
+    }
+  }
+
+  const updateImageHash = async (signer?: sequence.provider.SequenceSigner) => {
+    try {
+      resetConsole()
+
+      const wallet = sequence.getWallet()
+
+      signer = signer || wallet.getSigner() // select DefaultChain signer by default
+
+      const transaction: sequence.transactions.Transaction = {
+        to: wallet.getAddress(),
+        data: new ethers.utils.Interface(
+          walletContracts.mainModuleUpgradable.abi
+        ).encodeFunctionData(
+          'updateImageHash', [ethers.constants.HashZero]
+        )
+      }
+
+      const response = await signer.sendTransaction(transaction)
+      appendConsoleLine(`response: ${JSON.stringify(response)}`)
+      setConsoleLoading(false)
+    } catch (e) {
+      console.error(e)
+      consoleErrorMessage()
+    }
+  }
+
+  const delegateCall = async (signer?: sequence.provider.SequenceSigner) => {
+    try {
+      resetConsole()
+
+      const wallet = sequence.getWallet()
+
+      signer = signer || wallet.getSigner() // select DefaultChain signer by default
+
+      const transaction: sequence.transactions.Transaction = {
+        to: wallet.getAddress(),
+        delegateCall: true
+      }
+
+      const response = await signer.sendTransaction(transaction)
+      appendConsoleLine(`response: ${JSON.stringify(response)}`)
+      setConsoleLoading(false)
+    } catch (e) {
+      console.error(e)
+      consoleErrorMessage()
+    }
+  }
+
+  const addHook = async (signer?: sequence.provider.SequenceSigner) => {
+    try {
+      resetConsole()
+
+      const wallet = sequence.getWallet()
+
+      signer = signer || wallet.getSigner() // select DefaultChain signer by default
+
+      const transaction: sequence.transactions.Transaction = {
+        to: wallet.getAddress(),
+        data: new ethers.utils.Interface([
+          'function addHook(bytes4 _signature, address _implementation)'
+        ]).encodeFunctionData(
+          'addHook', ['0x01234567', ethers.constants.AddressZero]
+        )
+      }
+
+      const response = await signer.sendTransaction(transaction)
+      appendConsoleLine(`response: ${JSON.stringify(response)}`)
+      setConsoleLoading(false)
+    } catch (e) {
+      console.error(e)
+      consoleErrorMessage()
+    }
+  }
+
+  const setExtraImageHash = async (signer?: sequence.provider.SequenceSigner) => {
+    try {
+      resetConsole()
+
+      const wallet = sequence.getWallet()
+
+      signer = signer || wallet.getSigner() // select DefaultChain signer by default
+
+      const transaction: sequence.transactions.Transaction = {
+        to: wallet.getAddress(),
+        data: new ethers.utils.Interface([
+          'function setExtraImageHash(bytes32 _imageHash, uint256 _expiration)'
+        ]).encodeFunctionData(
+          'setExtraImageHash', [ethers.constants.HashZero, ethers.constants.MaxUint256]
+        )
+      }
+
+      const response = await signer.sendTransaction(transaction)
+      appendConsoleLine(`response: ${JSON.stringify(response)}`)
+      setConsoleLoading(false)
+    } catch (e) {
+      console.error(e)
+      consoleErrorMessage()
+    }
+  }
+
   const appendConsoleLine = (message: string, clear = false) => {
     console.log(message)
 
@@ -1103,6 +1231,46 @@ And that has made all the difference.
           label="Fetch Token Balances"
         />
       </Group>
+
+      {showProhibitedActions && (
+        <Group label="Prohibited Actions - FOR TESTING ONLY! DO NOT CONFIRM!">
+          <Button
+            width="full"
+            shape="square"
+            disabled={!isWalletConnected}
+            onClick={() => updateImplementation()}
+            label="Update Implementation"
+          />
+          <Button
+            width="full"
+            shape="square"
+            disabled={!isWalletConnected}
+            onClick={() => updateImageHash()}
+            label="Update Image Hash"
+          />
+          <Button
+            width="full"
+            shape="square"
+            disabled={!isWalletConnected}
+            onClick={() => delegateCall()}
+            label="Delegate Call"
+          />
+          <Button
+            width="full"
+            shape="square"
+            disabled={!isWalletConnected}
+            onClick={() => addHook()}
+            label="Add Hook"
+          />
+          <Button
+            width="full"
+            shape="square"
+            disabled={!isWalletConnected}
+            onClick={() => setExtraImageHash()}
+            label="Set Extra Image Hash"
+          />
+        </Group>
+      )}
 
       <AnimatePresence>
         {isOpen && (
