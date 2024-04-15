@@ -25,7 +25,7 @@ import { ChainId, NetworkType } from '@0xsequence/network'
 import { ERC_20_ABI } from './constants/abi'
 import { Console } from './components/Console'
 import { Group } from './components/Group'
-import { getDefaultChainId, saveDefaultChainId } from './helpers'
+import { getDefaultChainId } from './helpers'
 import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
 import skyweaverBannerLargeUrl from './images/skyweaver-banner-large.png'
@@ -900,10 +900,6 @@ And that has made all the difference.
 
   const resetConsole = () => {
     setConsoleLoading(true)
-  }
-
-  interface AddNewConsoleLineOptions {
-    logMessage?: boolean
   }
 
   const consoleWelcomeMessage = () => {
