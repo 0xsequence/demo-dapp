@@ -25,7 +25,7 @@ import { ChainId, NetworkType } from '@0xsequence/network'
 import { ERC_20_ABI } from './constants/abi'
 import { Console } from './components/Console'
 import { Group } from './components/Group'
-import { getDefaultChainId } from './helpers'
+import { getDefaultChainId, toHexString } from './helpers'
 import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
 import skyweaverBannerLargeUrl from './images/skyweaver-banner-large.png'
@@ -100,7 +100,7 @@ const App = () => {
 
   useMemo(() => {
     wallet.on('chainChanged', (chainId: string) => {
-      setShowChainId(ethers.BigNumber.from(chainId).toNumber())
+      setShowChainId(Number(BigInt(chainId)))
     })
   }, [])
 
@@ -187,10 +187,10 @@ const App = () => {
             wallet.getAddress(),
             connectDetails.proof.typedData,
             decodedProof.signature,
-            ethers.BigNumber.from(connectDetails.chainId).toNumber()
+            Number(BigInt(connectDetails.chainId))
           )
 
-          appendConsoleLine(`connected using chainId: ${ethers.BigNumber.from(connectDetails.chainId).toString()}`)
+          appendConsoleLine(`connected using chainId: ${BigInt(connectDetails.chainId).toString()}`)
           appendConsoleLine(`isValid (client)?: ${isValid}`)
         }
       }
@@ -404,7 +404,7 @@ And that has made all the difference.
       const signer = wallet.getSigner()
 
       // Message in hex
-      const message = ethers.utils.hexlify(ethers.utils.toUtf8Bytes('Hello, world!'))
+      const message = ethers.hexlify(ethers.toUtf8Bytes('Hello, world!'))
 
       // sign
       const sig = await signer.signMessage(message)
@@ -431,7 +431,7 @@ And that has made all the difference.
       const signer = wallet.getSigner()
 
       // Message in hex
-      const message = ethers.utils.toUtf8Bytes('Hello, world!')
+      const message = ethers.toUtf8Bytes('Hello, world!')
 
       // sign
       const sig = await signer.signMessage(message)
@@ -517,7 +517,7 @@ And that has made all the difference.
       const wallet = sequence.getWallet()
 
       const wmaticContractAddress = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270'
-      const wmaticInterface = new ethers.utils.Interface(['function withdraw(uint256 amount)'])
+      const wmaticInterface = new ethers.Interface(['function withdraw(uint256 amount)'])
 
       const tx: sequence.transactions.Transaction = {
         to: wmaticContractAddress,
@@ -558,7 +558,7 @@ And that has made all the difference.
         revertOnError: false,
         gasLimit: '0x55555',
         to: toAddress,
-        value: ethers.utils.parseEther('1.234'),
+        value: ethers.parseEther('1.234'),
         data: '0x'
       }
 
@@ -567,7 +567,7 @@ And that has made all the difference.
         revertOnError: false,
         gasLimit: '0x55555',
         to: toAddress,
-        value: ethers.utils.parseEther('0.4242'),
+        value: ethers.parseEther('0.4242'),
         data: '0x'
       }
 
@@ -602,7 +602,7 @@ And that has made all the difference.
       // (of course, you can send anywhere)
       const toAddress = await signer.getAddress()
 
-      const amount = ethers.utils.parseUnits('1', 1)
+      const amount = ethers.parseUnits('1', 1)
 
       // (USDC address on Sepolia)
       const usdcAddress = '0x07865c6e87b9f70255377e024ace6630c1eaa37f'
@@ -613,7 +613,7 @@ And that has made all the difference.
         gasLimit: '0x55555',
         to: usdcAddress,
         value: 0,
-        data: new ethers.utils.Interface(ERC_20_ABI).encodeFunctionData('transfer', [toAddress, amount.toHexString()])
+        data: new ethers.Interface(ERC_20_ABI).encodeFunctionData('transfer', [toAddress, toHexString(amount)])
       }
 
       const txnResp = await signer.sendTransaction([tx], { chainId: ChainId.SEPOLIA })
@@ -639,7 +639,7 @@ And that has made all the difference.
       // (of course, you can send anywhere)
       const toAddress = await signer.getAddress()
 
-      const amount = ethers.utils.parseUnits('0.05', 18)
+      const amount = ethers.parseUnits('0.05', 18)
       const daiContractAddress = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063' // (DAI address on Polygon)
 
       const tx: sequence.transactions.Transaction = {
@@ -648,7 +648,7 @@ And that has made all the difference.
         gasLimit: '0x55555',
         to: daiContractAddress,
         value: 0,
-        data: new ethers.utils.Interface(ERC_20_ABI).encodeFunctionData('transfer', [toAddress, amount.toHexString()])
+        data: new ethers.Interface(ERC_20_ABI).encodeFunctionData('transfer', [toAddress, toHexString(amount)])
       }
 
       const txnResp = await signer.sendTransaction([tx])
@@ -705,7 +705,7 @@ And that has made all the difference.
       // USD Coin (PoS) on Polygon
       const address = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
 
-      const usdc = new ethers.Contract(address, abi, signer)
+      const usdc = new ethers.Contract(address, abi)
 
       const usdSymbol = await usdc.symbol()
       appendConsoleLine(`Token symbol: ${usdSymbol}`)
@@ -770,11 +770,9 @@ And that has made all the difference.
 
       const transaction: sequence.transactions.Transaction = {
         to: wallet.getAddress(),
-        data: new ethers.utils.Interface(
-          walletContracts.mainModule.abi
-        ).encodeFunctionData(
-          'updateImplementation', [ethers.constants.AddressZero]
-        )
+        data: new ethers.Interface(walletContracts.mainModule.abi).encodeFunctionData('updateImplementation', [
+          ethers.ZeroAddress
+        ])
       }
 
       const response = await signer.sendTransaction(transaction)
@@ -796,11 +794,9 @@ And that has made all the difference.
 
       const transaction: sequence.transactions.Transaction = {
         to: wallet.getAddress(),
-        data: new ethers.utils.Interface(
-          walletContracts.mainModuleUpgradable.abi
-        ).encodeFunctionData(
-          'updateImageHash', [ethers.constants.HashZero]
-        )
+        data: new ethers.Interface(walletContracts.mainModuleUpgradable.abi).encodeFunctionData('updateImageHash', [
+          ethers.ZeroHash
+        ])
       }
 
       const response = await signer.sendTransaction(transaction)
@@ -844,10 +840,9 @@ And that has made all the difference.
 
       const transaction: sequence.transactions.Transaction = {
         to: wallet.getAddress(),
-        data: new ethers.utils.Interface([
-          'function addHook(bytes4 _signature, address _implementation)'
-        ]).encodeFunctionData(
-          'addHook', ['0x01234567', ethers.constants.AddressZero]
+        data: new ethers.Interface(['function addHook(bytes4 _signature, address _implementation)']).encodeFunctionData(
+          'addHook',
+          ['0x01234567', ethers.ZeroAddress]
         )
       }
 
@@ -870,10 +865,9 @@ And that has made all the difference.
 
       const transaction: sequence.transactions.Transaction = {
         to: wallet.getAddress(),
-        data: new ethers.utils.Interface([
-          'function setExtraImageHash(bytes32 _imageHash, uint256 _expiration)'
-        ]).encodeFunctionData(
-          'setExtraImageHash', [ethers.constants.HashZero, ethers.constants.MaxUint256]
+        data: new ethers.Interface(['function setExtraImageHash(bytes32 _imageHash, uint256 _expiration)']).encodeFunctionData(
+          'setExtraImageHash',
+          [ethers.ZeroHash, ethers.MaxUint256]
         )
       }
 
@@ -1251,13 +1245,7 @@ And that has made all the difference.
             onClick={() => delegateCall()}
             label="Delegate Call"
           />
-          <Button
-            width="full"
-            shape="square"
-            disabled={!isWalletConnected}
-            onClick={() => addHook()}
-            label="Add Hook"
-          />
+          <Button width="full" shape="square" disabled={!isWalletConnected} onClick={() => addHook()} label="Add Hook" />
           <Button
             width="full"
             shape="square"
