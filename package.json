@@ -16,13 +16,13 @@
     "clear:vite:cache": "rm -rf node_modules/.vite/"
   },
   "dependencies": {
-    "0xsequence": "2.0.0",
-    "@0xsequence/abi": "2.0.0",
-    "@0xsequence/design-system": "^1.7.5",
+    "0xsequence": "2.0.1",
+    "@0xsequence/abi": "2.0.1",
+    "@0xsequence/design-system": "^1.7.6",
     "@0xsequence/ethauth": "^1.0.0",
-    "@0xsequence/network": "2.0.0",
-    "@0xsequence/provider": "2.0.0",
-    "@0xsequence/utils": "2.0.0",
+    "@0xsequence/network": "2.0.1",
+    "@0xsequence/provider": "2.0.1",
+    "@0xsequence/utils": "2.0.1",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.22",
@@ -32,6 +32,13 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^4.5.5"
+  },
+  "devDependencies": {
+    "@vanilla-extract/vite-plugin": "^4.0.6",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.2.6",
+    "vite-plugin-svgr": "^4.2.0",
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "eslintConfig": {
     "extends": [
@@ -49,12 +56,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@vanilla-extract/vite-plugin": "^4.0.6",
-    "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.2.6",
-    "vite-plugin-svgr": "^4.2.0",
-    "vite-tsconfig-paths": "^4.3.2"
   }
 }
