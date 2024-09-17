@@ -24,13 +24,13 @@
     "@0xsequence/provider": "2.0.6",
     "@0xsequence/utils": "2.0.6",
     "@types/node": "^20.11.30",
-    "@types/react": "^18.2.73",
-    "@types/react-dom": "^18.2.22",
+    "@types/react": "^18.3.7",
+    "@types/react-dom": "^18.3.0",
     "@vanilla-extract/css": "^1.14.1",
     "ethers": "^6.13.2",
     "framer-motion": "^9.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "^4.5.5"
   },
   "devDependencies": {
