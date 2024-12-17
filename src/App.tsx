@@ -30,27 +30,30 @@ import logoUrl from './images/logo.svg'
 import skyweaverBannerUrl from './images/skyweaver-banner.png'
 import skyweaverBannerLargeUrl from './images/skyweaver-banner-large.png'
 
-const PROJECT_ACCESS_KEY = 'AQAAAAAAAAbvrgpWEC2Aefg5qYStQmwjBpA'
-
 configureLogger({ logLevel: 'DEBUG' })
 
 interface Environment {
   name: string
   walletUrl: string
+  projectAccessKey: string
 }
 
 const environments: Environment[] = [
   {
     name: 'production',
-    walletUrl: 'https://sequence.app'
+    walletUrl: 'https://sequence.app',
+    projectAccessKey: 'AQAAAAAAAAbvrgpWEC2Aefg5qYStQmwjBpA'
   },
   {
     name: 'development',
-    walletUrl: 'https://dev.sequence.app'
+    walletUrl: 'https://dev.sequence.app',
+    //projectAccessKey: 'AQAAAAAAAAVBNfoB30kz7Ph4I_Qs5mkYuDc',
+    projectAccessKey: 'AQAAAAAAAAVCXiQ9f_57R44MjorZ4SmGdhA'
   },
   {
     name: 'local',
-    walletUrl: 'http://localhost:3333'
+    walletUrl: 'http://localhost:3333',
+    projectAccessKey: 'AQAAAAAAAAVCXiQ9f_57R44MjorZ4SmGdhA'
   }
 ]
 
@@ -73,16 +76,17 @@ const urlParams = new URLSearchParams(window.location.search)
 const env = urlParams.get('env') ?? 'production'
 const envConfig = environments.find(x => x.name === env)
 const walletAppURL = urlParams.get('walletAppURL') ?? envConfig.walletUrl
+const { projectAccessKey } = envConfig
 const showProhibitedActions = urlParams.has('showProhibitedActions')
 
 if (walletAppURL && walletAppURL.length > 0) {
   // Wallet can point to a custom wallet app url
   // NOTICE: this is not needed, unless testing an alpha version of the wallet
-  sequence.initWallet(PROJECT_ACCESS_KEY, { defaultNetwork: defaultChainId, transports: { walletAppURL } })
+  sequence.initWallet(projectAccessKey, { defaultNetwork: defaultChainId, transports: { walletAppURL } })
 } else {
   // Init the sequence wallet library at the top-level of your project with
   // your designed default chain id
-  sequence.initWallet(PROJECT_ACCESS_KEY, { defaultNetwork: defaultChainId, transports: { walletAppURL } })
+  sequence.initWallet(projectAccessKey, { defaultNetwork: defaultChainId, transports: { walletAppURL } })
 }
 
 // App component
@@ -995,6 +999,9 @@ And that has made all the difference.
           label={'Environment'}
           labelLocation="top"
           onValueChange={value => {
+            // Disconnect the wallet
+            disconnect()
+
             // Set the new env url param
             urlParams.set('env', value)
 
