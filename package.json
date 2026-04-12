@@ -16,29 +16,29 @@
     "clear:vite:cache": "rm -rf node_modules/.vite/"
   },
   "dependencies": {
-    "0xsequence": "2.2.3",
-    "@0xsequence/abi": "2.2.13",
-    "@0xsequence/design-system": "^1.8.1",
+    "0xsequence": "2.3.23",
+    "@0xsequence/abi": "2.3.23",
+    "@0xsequence/design-system": "^3.0.1",
     "@0xsequence/ethauth": "^1.0.0",
-    "@0xsequence/network": "2.2.13",
-    "@0xsequence/provider": "2.2.13",
-    "@0xsequence/utils": "2.2.13",
-    "@types/node": "^20.11.30",
-    "@types/react": "^18.3.7",
-    "@types/react-dom": "^18.3.0",
-    "@vanilla-extract/css": "^1.14.1",
+    "@0xsequence/network": "2.3.23",
+    "@0xsequence/provider": "2.3.29",
+    "@0xsequence/utils": "2.3.23",
+    "@types/node": "^22.13.4",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.2.2",
+    "@vanilla-extract/css": "^1.17.4",
     "ethers": "^6.13.4",
-    "framer-motion": "^9.0.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "typescript": "^4.5.5"
+    "framer-motion": "^12.23.15",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
-    "@vanilla-extract/vite-plugin": "^4.0.6",
-    "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.2.6",
+    "@vanilla-extract/vite-plugin": "^5.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.3.5",
     "vite-plugin-svgr": "^4.2.0",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "eslintConfig": {
     "extends": [
